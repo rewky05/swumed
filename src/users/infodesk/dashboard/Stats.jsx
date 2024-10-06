@@ -38,86 +38,58 @@ const Stats = () => {
   const [totalPatients, setTotalPatients] = useState(0);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [recentAdmissions, setRecentAdmissions] = useState(0);
-  const [totalActivePatients, setTotalActivePatients] = useState(0);
-  const [totalDischargedPatients, setTotalDischargedPatients] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
+        console.log("User data:", user);
+
         if (patients.length === 0) {
-          await fetchPatients();
+          await fetchPatients(); 
         }
-    
+
         if (patients.length > 0 && totalPatients !== patients.length) {
           const patientsCount = patients.length;
           setTotalPatients(patientsCount);
-          setPatientsData([totalActivePatients, totalDischargedPatients]);  // Update Pie chart data
+          setPatientsData([patientsCount, 100 - patientsCount]);
         }
-    
+
         const db = getDatabase();
         const today = new Date().toISOString().split("T")[0];
         const facilityId = user.hospital_id || user.clinic_id;
         const facilityType = user.hospital_id ? "hospitals" : "clinics";
         const branchId = user.branch_id;
         const branchRef = ref(db, `${facilityType}/${facilityId}/branch/${branchId}`);
-    
+
         onValue(branchRef, (snapshot) => {
           const branchData = snapshot.val();
+
           if (branchData) {
-            // Doctors count logic
             const doctorsCount = branchData.doctors ? Object.keys(branchData.doctors).length : 0;
             setTotalDoctors(doctorsCount);
             setDoctorsData([doctorsCount, 100 - doctorsCount]);
-    
-            const activePatients = [];
-            const dischargedPatients = [];
-            const admissions = [];
 
-            // Iterate over patients linked to the branch
+            const admissions = [];
             Object.entries(branchData.patients || {}).forEach(([patientId]) => {
               const patientRef = ref(db, `patients/${patientId}/medicalRecords`);
               onValue(patientRef, (recordSnapshot) => {
                 const records = recordSnapshot.val();
                 if (records) {
                   Object.entries(records).forEach(([recordId, record]) => {
-                    const belongsToFacility =
-                      record.healthcareProvider.hospital_id === facilityId &&
-                      record.healthcareProvider.branch_id === branchId;
-
-                    // Check if the patient is active or discharged
-                    if (belongsToFacility) {
-                      if (record.status === "Active") {
-                        activePatients.push(patientId);
-                      } else if (record.status === "Discharged") {
-                        dischargedPatients.push(patientId);
-                      }
-
-                      // Check if the admission date is today
-                      if (record.date === today) {
-                        admissions.push(record);
-                      }
+                    if (record.date === today) {
+                      admissions.push(record);
                     }
                   });
                 }
-
-                // Log the results to the console
-                console.log(`Active patients: ${activePatients.length}`);
-                console.log(`Discharged patients: ${dischargedPatients.length}`);
-                console.log(`Admissions today: ${admissions.length}`);
               });
             });
 
-            // Set total active/discharged patients
-            setTotalActivePatients(activePatients.length);
-            setTotalDischargedPatients(dischargedPatients.length);
-
-            // Set recent admissions
             setRecentAdmissions(admissions.length);
-            setAdmissionsData(admissions.map((_, i) => (i + 1) * 10));
+            setAdmissionsData(admissions.map((_, i) => (i + 1) * 10)); 
           }
         });
       }
-    };    
+    };
 
     fetchData();
   }, [user, fetchPatients, patients, totalPatients]);
@@ -140,7 +112,7 @@ const Stats = () => {
           <div className="w-1/2 h-full flex justify-center items-center">
             <Pie
               data={{
-                labels: ["Active", "Discharged"],
+                labels: ["Active", "Inactive"],
                 datasets: [
                   {
                     label: "Patients",

@@ -20,7 +20,6 @@ import HealthcareProvider from "./users/superadmin/accounts/HealthcareProvider";
 
 import { UserProvider } from "./users/context/UserContext";
 import { PatientProvider } from "./users/context/PatientContext";
-import { ProviderProvider } from "./users/context/ProviderContext";
 import { AuthProvider } from "./users/context/AuthContext";
 import { MedicalRecordsProvider } from "./users/context/MedicalRecordsContext";
 
@@ -47,39 +46,37 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // Optionally add a loading spinner or message
+    return <div>Loading...</div>;
   }
 
   return (
     <Router>
-      <AuthProvider value={{ user, setUser }}> {/* Wrap the entire app with AuthProvider */}
+      <AuthProvider value={{ user, setUser }}>
         <UserProvider>
           <PatientProvider>
-            <ProviderProvider>
-              <MedicalRecordsProvider> {/* Move MedicalRecordsProvider outside of Routes */}
-                <Routes>
-                  <Route path="/" element={<Navigate to="/login" />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/infodesk-dashboard" element={<Layout />}>
-                    <Route index element={<DashboardInfodesk />} />
-                    <Route path="patients" element={<Patients />} /> {/* Patients route */}
-                    <Route path="doctors" element={<Doctors />} />
-                    <Route path="settings" element={<Settings />} />
-                  </Route>
-                  <Route path="/superadmin-dashboard" element={<Layout />}>
-                    <Route index element={<DashboardSuperadmin />} />
-                    <Route path="accounts" element={<Accounts />} />
-                    <Route
-                      path="healthcare-provider"
-                      element={<HealthcareProvider />}
-                    />
-                  </Route>
-                  <Route path="/philhealth-dashboard" element={<Layout />}>
-                    <Route index element={<DashboardPhilhealth />} />
-                  </Route>
-                </Routes>
-              </MedicalRecordsProvider>
-            </ProviderProvider>
+            <MedicalRecordsProvider>
+              <Routes>
+                <Route path="/" element={<Navigate to="/login" />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/infodesk-dashboard" element={<Layout />}>
+                  <Route index element={<DashboardInfodesk />} />
+                  <Route path="patients" element={<Patients />} />
+                  <Route path="doctors" element={<Doctors />} />
+                </Route>
+                <Route path="/superadmin-dashboard" element={<Layout />}>
+                  <Route index element={<DashboardSuperadmin />} />
+                  <Route path="accounts" element={<Accounts />} />
+                  <Route
+                    path="healthcare-provider"
+                    element={<HealthcareProvider />}
+                  />
+                </Route>
+                <Route path="/philhealth-dashboard" element={<Layout />}>
+                  <Route index element={<DashboardPhilhealth />} />
+                </Route>
+                <Route path="settings" element={<Settings />} />
+              </Routes>
+            </MedicalRecordsProvider>
           </PatientProvider>
         </UserProvider>
       </AuthProvider>

@@ -8,54 +8,15 @@ import DoctorDetailsModal from "../../modals/DoctorDetails";
 import CreateDoctor from "../../modals/CreateDoctor";
 
 import { useAuthContext } from "../../context/AuthContext";
-import { useProviderContext } from "../../context/ProviderContext";
 
 const Doctors = () => {
   const { currentUser, loading } = useAuthContext(); 
-  const { providerId, providerType } = useProviderContext(); 
 
   const [doctors, setDoctors] = useState([]);
-  const [healthcareProviderName, setHealthcareProviderName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    if (loading || !currentUser) return;
-
-    const doctorsRef = ref(database, "doctors");
-
-    if (providerId && providerType) {
-      const refPath = providerType === "hospital" ? "hospitals" : "clinics";
-      const healthcareProviderRef = ref(database, refPath);
-
-      onValue(healthcareProviderRef, (snapshot) => {
-        const providerData = snapshot.val()?.[providerId];
-        if (providerData && providerData.name !== healthcareProviderName) {
-          setHealthcareProviderName(providerData.name);
-        }
-      });
-    }
-
-    onValue(doctorsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data && providerId) {
-        const doctorsArray = Object.keys(data)
-          .filter((key) => {
-            const doctor = data[key];
-            return (
-              doctor.healthcareProvider &&
-              (doctor.healthcareProvider.hospital_id === providerId ||
-                doctor.healthcareProvider.clinic_id === providerId)
-            );
-          })
-          .map((key) => ({ id: key, ...data[key] }));
-
-        setDoctors(doctorsArray);
-      }
-    });
-  }, [currentUser, loading, providerId, providerType, healthcareProviderName]);
 
   const handleDoctorClick = (doctor) => {
     setSelectedDoctor(doctor);
@@ -93,7 +54,7 @@ const Doctors = () => {
         >
           <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
         </button>
-        <Link to="/doctors">
+        <Link to="/infodesk-dashboard/doctors">
           <button className="bg-primary_maroon rounded-md text-white py-2 px-7 flex items-center">
             <FaEye size={20} /> <span className="ml-1">View All</span>
           </button>
