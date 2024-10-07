@@ -41,7 +41,7 @@ const Sidebar = () => {
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/superadmin-dashboard"
                       ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
                   }`}
                 >
                   <FaThLarge className="mr-3" />
@@ -53,7 +53,7 @@ const Sidebar = () => {
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/accounts"
                       ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -65,7 +65,7 @@ const Sidebar = () => {
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/healthcare-provider"
                       ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -83,7 +83,7 @@ const Sidebar = () => {
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/infodesk-dashboard"
                       ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
                   }`}
                 >
                   <FaThLarge className="mr-3" />
@@ -96,7 +96,7 @@ const Sidebar = () => {
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/patients"
                       ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -109,7 +109,7 @@ const Sidebar = () => {
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/doctors"
                       ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
                   }`}
                 >
                   <FaUserMd className="mr-3" />
@@ -126,7 +126,7 @@ const Sidebar = () => {
                 className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                   activeItem === "/philhealth-dashboard"
                     ? "bg-red-100 text-primary_maroon"
-                    : "text-gray-600 hover:bg-gray-100"
+                    : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
                 }`}
               >
                 <FaThLarge className="mr-3" />
@@ -140,7 +140,7 @@ const Sidebar = () => {
               className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                 activeItem === "/settings"
                   ? "bg-red-100 text-primary_maroon"
-                  : "text-gray-600 hover:bg-gray-100"
+                  : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
               }`}
             >
               <FaCogs className="mr-3" />
@@ -153,7 +153,7 @@ const Sidebar = () => {
       <div className="flex justify-center p-8">
         <button
           onClick={handleLogout}
-          className="flex items-center py-2 px-8 bg-primary_maroon text-white rounded-lg hover:bg-red-700"
+          className="rounded-md text-white py-[7px] px-8 flex items-center bg-primary_maroon hover:shadow-lg hover:scale-105"
         >
           <BiLogOut className="mr-2" />
           Logout

@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.main-button {
+    @apply rounded-md text-white py-[7px] px-4 flex items-center bg-primary_maroon hover:shadow-lg hover:scale-105
+}
+
+.action-button {
+    @apply text-primary_maroon border border-primary_maroon p-2 rounded-md mx-2 hover:bg-primary_maroon hover:text-white
+}

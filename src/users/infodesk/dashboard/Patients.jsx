@@ -72,33 +72,37 @@ const Patients = () => {
   };
 
   const filteredPatients = medicalRecords
-  .filter((record) =>
-    Object.values(record.medicalRecords || {}).some(
-      (mr) =>
-        mr.healthcareProvider?.hospital_id === user.hospital_id &&
-        mr.healthcareProvider?.branch_id === user.branch_id
+    .filter((record) =>
+      Object.values(record.medicalRecords || {}).some(
+        (mr) =>
+          mr.healthcareProvider?.hospital_id === user.hospital_id &&
+          mr.healthcareProvider?.branch_id === user.branch_id
+      )
     )
-  )
-  .filter((patient) => {
-    const patientName = patient.generalData?.name?.toLowerCase() || "";
-    const philhealthNumber = patient.generalData?.philhealthNumber || "";
+    .filter((patient) => {
+      const patientName = patient.generalData?.name?.toLowerCase() || "";
+      const philhealthNumber = patient.generalData?.philhealthNumber || "";
 
-    const medicalRecord = Object.values(patient.medicalRecords || {})[0] || {};
+      const medicalRecord =
+        Object.values(patient.medicalRecords || {})[0] || {};
 
-    const doctorName = doctorNames[medicalRecord.healthcareProvider?.assignedDoctor]?.toLowerCase() || "unknown doctor";
-    const date = medicalRecord?.date?.toLowerCase() || "";
-    const status = medicalRecord?.status?.toLowerCase() || "";
+      const doctorName =
+        doctorNames[
+          medicalRecord.healthcareProvider?.assignedDoctor
+        ]?.toLowerCase() || "unknown doctor";
+      const date = medicalRecord?.date?.toLowerCase() || "";
+      const status = medicalRecord?.status?.toLowerCase() || "";
 
-    const searchLower = searchTerm.toLowerCase();
+      const searchLower = searchTerm.toLowerCase();
 
-    return (
-      patientName.includes(searchLower) ||
-      philhealthNumber.includes(searchLower) ||
-      date.includes(searchLower) ||
-      doctorName.includes(searchLower) ||
-      status.includes(searchLower)
-    );
-  });
+      return (
+        patientName.includes(searchLower) ||
+        philhealthNumber.includes(searchLower) ||
+        date.includes(searchLower) ||
+        doctorName.includes(searchLower) ||
+        status.includes(searchLower)
+      );
+    });
 
   const handleViewPatientDetails = (patient) => {
     setSelectedPatient(patient);
@@ -125,14 +129,14 @@ const Patients = () => {
       <div className="flex items-center gap-4 mb-4">
         <h2 className="text-2xl font-semibold p-1">Patient Search</h2>
         <button
+          className="main-button"
           onClick={() => setShowCreatePatientModal(true)}
-          className="bg-primary_maroon rounded-md text-white py-2 px-5 flex items-center"
         >
           <IoMdAdd size={20} /> <span className="ml-1">Add Patient</span>
         </button>
-        <Link to="patients">
-          <button className="bg-primary_maroon rounded-md text-white py-2 px-7 flex items-center">
-            <FaEye size={20} /> <span className="ml-1">View All</span>
+        <Link to="/patients">
+          <button className="main-button">
+            <FaEye size={20} /> <span className="ml-2">View All</span>
           </button>
         </Link>
       </div>
@@ -145,16 +149,16 @@ const Patients = () => {
         className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
       />
 
-      <div className="overflow-x-auto overflow-y-scroll max-h-[250px]">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="p-2">Philhealth #</th>
-              <th className="p-2">Patient Name</th>
-              <th className="p-2">Date</th>
-              <th className="p-2">Doctor Assigned</th>
-              <th className="p-2">Status</th>
-              <th className="p-2 text-center">Actions</th>
+      <div className="overflow-x-auto overflow-y-auto rounded-lg">
+        <table className="w-full text-left border text-[#171A1F]">
+          <thead className="">
+            <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
+              <th className="p-4">Philhealth #</th>
+              <th className="p-4">Patient Name</th>
+              <th className="p-4">Date</th>
+              <th className="p-4">Doctor Assigned</th>
+              <th className="p-4">Status</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -172,14 +176,16 @@ const Patients = () => {
                 // const isEditable = isEditableRecord(patient);
 
                 return (
-                  <tr key={patientId} className="border-b">
-                    <td>{patient.generalData?.philhealthNumber || "N/A"}</td>
-                    <td className="p-2">
+                  <tr key={patientId} className="">
+                    <td className="p-3">
+                      {patient.generalData?.philhealthNumber || "N/A"}
+                    </td>
+                    <td className="p-3">
                       {patient.generalData?.name || "N/A"}
                     </td>
-                    <td className="p-2">{medicalRecord?.date || "N/A"}</td>
-                    <td className="p-2">{doctorName || "To be assigned"}</td>
-                    <td className="p-2">
+                    <td className="p-3">{medicalRecord?.date || "N/A"}</td>
+                    <td className="p-3">{doctorName || "To be assigned"}</td>
+                    <td className="p-3">
                       <span
                         className={`${
                           medicalRecord?.status === "Active"
@@ -190,12 +196,12 @@ const Patients = () => {
                         {medicalRecord?.status || "N/A"}
                       </span>
                     </td>
-                    <td className="p-2 text-center">
+                    <td className="p-3 text-center">
                       <button
                         onClick={() => handleViewPatientDetails(patient)}
-                        className={`text-blue-500 p-2 hover:underline ${
+                        className={`action-button ${
                           doctorName === "To be assigned"
-                            ? "opacity-50 cursor-not-allowed"
+                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                             : ""
                         }`}
                         disabled={doctorName === "To be assigned"}
@@ -203,29 +209,31 @@ const Patients = () => {
                         View
                       </button>
                       <button
-                        onClick={() =>
-                          handleDischargePatient(patient, recordId)
-                        }
-                        className={`text-red-500 p-2 hover:underline ${
-                          doctorName === "To be assigned" || medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
-                        // disabled={!isEditable}
-                      >
-                        Discharge
-                      </button>
-                      <button
-                        className={`text-green-500 p-2 hover:underline ${
-                          doctorName === "To be assigned" || medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed"
+                        className={`action-button ${
+                          doctorName === "To be assigned" ||
+                          medicalRecord?.status === "Discharged"
+                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                             : ""
                         }`}
                         disabled={doctorName === "To be assigned"}
                         onClick={() => handleClinicalSummary(patient, recordId)}
                       >
                         +Summary
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleDischargePatient(patient, recordId)
+                        }
+                        className={`action-button ${
+                          doctorName === "To be assigned" ||
+                          medicalRecord?.status === "Discharged"
+                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
+                            : ""
+                        }`}
+                        disabled={doctorName === "To be assigned"}
+                        // disabled={!isEditable}
+                      >
+                        Discharge
                       </button>
                     </td>
                   </tr>

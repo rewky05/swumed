@@ -56,7 +56,7 @@ const Doctors = () => {
       <div className="flex items-center gap-4 mb-4">
         <h2 className="text-2xl font-semibold p-1">Doctor Search</h2>
         <button
-          className="bg-primary_maroon rounded-md text-white py-2 px-5 flex items-center"
+          className="main-button"
           onClick={handleAddDoctor}
         >
           <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
@@ -87,7 +87,7 @@ const Doctors = () => {
               </div>
               <div className="p-4">
                 <button
-                  className="p-2 rounded-md border border-primary_maroon hover:bg-highlight_pink transition-all"
+                  className="action-button"
                   onClick={() => handleDoctorClick(doctor)}
                 >
                   Details

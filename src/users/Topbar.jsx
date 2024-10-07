@@ -24,7 +24,7 @@ const Topbar = () => {
         <h2 className="text-black">{userName}</h2>
         <Link to="/settings">
           <button className="text-gray-500 text-2xl flex items-center font-medium rounded-[8px] py-2 px-4 cursor-pointer">
-            <IoSettingsOutline className="" />
+            <IoSettingsOutline className="hover:rotate-90 duration-300" />
           </button>
         </Link>
       </div>

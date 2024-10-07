@@ -58,14 +58,14 @@ const Doctors = () => {
       <div className="flex items-center gap-4 mb-4">
         <h2 className="text-2xl font-semibold p-1">Doctor Search</h2>
         <button
-          className="bg-primary_maroon rounded-md text-white py-2 px-5 flex items-center"
+          className="main-button"
           onClick={handleAddDoctor}
         >
           <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
         </button>
-        <Link to="doctors">
-          <button className="bg-primary_maroon rounded-md text-white py-2 px-7 flex items-center">
-            <FaEye size={20} /> <span className="ml-1">View All</span>
+        <Link to="/doctors">
+          <button className="main-button">
+            <FaEye size={20} /> <span className="ml-2">View All</span>
           </button>
         </Link>
       </div>
@@ -77,8 +77,9 @@ const Doctors = () => {
         onChange={handleSearchChange}
         className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
       />
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {/* grid grid-cols-2 md:grid-cols-3 gap-4 h-[250px] */}
+      {/* flex flex-row gap-4 overflow-x-auto */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-[250px] overflow-y-auto">
         {filteredDoctors.map((doctor) => (
           <div
             key={doctor.id}
@@ -94,7 +95,7 @@ const Doctors = () => {
               </div>
               <div className="p-4">
                 <button
-                  className="p-2 rounded-md border border-primary_maroon hover:bg-highlight_pink transition-all"
+                  className="action-button"
                   onClick={() => handleDoctorClick(doctor)}
                 >
                   Details

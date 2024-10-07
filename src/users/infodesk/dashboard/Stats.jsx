@@ -51,7 +51,7 @@ const Stats = () => {
         if (patients.length > 0 && totalPatients !== patients.length) {
           const patientsCount = patients.length;
           setTotalPatients(patientsCount);
-          setPatientsData([patientsCount, 100 - patientsCount]);
+          setPatientsData([patientsCount, 10 - patientsCount]);
         }
 
         const db = getDatabase();
@@ -67,9 +67,9 @@ const Stats = () => {
           if (branchData) {
             const doctorsCount = branchData.doctors ? Object.keys(branchData.doctors).length : 0;
             setTotalDoctors(doctorsCount);
-            setDoctorsData([doctorsCount, 100 - doctorsCount]);
+            setDoctorsData([doctorsCount, 10 - doctorsCount]);
 
-            const admissions = [];
+            const admissions = [4, 1, 1, 1, 6];
             Object.entries(branchData.patients || {}).forEach(([patientId]) => {
               const patientRef = ref(db, `patients/${patientId}/medicalRecords`);
               onValue(patientRef, (recordSnapshot) => {

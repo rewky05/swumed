@@ -124,7 +124,7 @@ const Patients = () => {
         <h2 className="text-2xl font-semibold p-1">Patient Search</h2>
         <button
           onClick={() => setShowCreatePatientModal(true)}
-          className="bg-primary_maroon rounded-md text-white py-2 px-5 flex items-center"
+          className="main-button"
         >
           <IoMdAdd size={20} /> <span className="ml-1">Add Patient</span>
         </button>
@@ -186,9 +186,9 @@ const Patients = () => {
                     <td className="p-2 text-center">
                       <button
                         onClick={() => handleViewPatientDetails(patient)}
-                        className={`text-blue-500 p-2 hover:underline ${
+                        className={`action-button ${
                           doctorName === "To be assigned"
-                            ? "opacity-50 cursor-not-allowed"
+                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                             : ""
                         }`}
                         disabled={doctorName === "To be assigned"}
@@ -199,9 +199,9 @@ const Patients = () => {
                         onClick={() =>
                           handleDischargePatient(patient, recordId)
                         }
-                        className={`text-red-500 p-2 hover:underline ${
+                        className={`action-button ${
                           doctorName === "To be assigned" || medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed"
+                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                             : ""
                         }`}
                         disabled={doctorName === "To be assigned"}
@@ -210,9 +210,9 @@ const Patients = () => {
                         Discharge
                       </button>
                       <button
-                        className={`text-green-500 p-2 hover:underline ${
+                        className={`action-button ${
                           doctorName === "To be assigned" || medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed"
+                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                             : ""
                         }`}
                         disabled={doctorName === "To be assigned"}

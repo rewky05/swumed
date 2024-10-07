@@ -67,7 +67,7 @@ const Settings = () => {
         <div className="flex justify-end pt-2 pr-8">
           <button
             onClick={() => setForgotPassword(true)}
-            className="flex items-center py-2 px-4 bg-primary_maroon text-white rounded-lg hover:bg-red-700"
+            className="main-button"
           >
             Change Password
           </button>
