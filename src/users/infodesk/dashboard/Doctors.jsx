@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { database } from "../../../backend/firebase";
+import { useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -8,39 +6,50 @@ import DoctorDetailsModal from "../../modals/DoctorDetails";
 import CreateDoctor from "../../modals/CreateDoctor";
 
 import { useAuthContext } from "../../context/AuthContext";
+import { useUserContext } from "../../context/UserContext";
+import { useDoctorContext } from "../../context/DoctorContext";
 
 const Doctors = () => {
-  const { currentUser, loading } = useAuthContext(); 
+  const { currentUser, loading: authLoading } = useAuthContext();
+  const { user, loading: userLoading } = useUserContext();
+  const { doctors, loading: doctorsLoading } = useDoctorContext();
 
-  const [doctors, setDoctors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showCreateDoctor, setShowCreateDoctor] = useState(false);
 
   const handleDoctorClick = (doctor) => {
+    console.log("Doctor clicked:", doctor);
     setSelectedDoctor(doctor);
     setIsModalOpen(true);
   };
 
   const handleAddDoctor = () => {
-    setShowModal(true);
+    console.log("Add Doctor button clicked");
+    setShowCreateDoctor(true);
   };
 
   const handleCloseModal = () => {
+    console.log("Closing modals");
     setIsModalOpen(false);
     setShowModal(false);
   };
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const term = e.target.value;
+    console.log("Search term updated:", term);
+    setSearchTerm(term);
   };
 
-  const filteredDoctors = doctors.filter((doctor) =>
-    doctor.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDoctors = doctors.filter(
+    (doctor) =>
+      doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.consultationDays.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
+  if (authLoading || userLoading || doctorsLoading) {
     return <p>Loading...</p>;
   }
 
@@ -54,7 +63,7 @@ const Doctors = () => {
         >
           <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
         </button>
-        <Link to="/infodesk-dashboard/doctors">
+        <Link to="doctors">
           <button className="bg-primary_maroon rounded-md text-white py-2 px-7 flex items-center">
             <FaEye size={20} /> <span className="ml-1">View All</span>
           </button>
@@ -102,12 +111,18 @@ const Doctors = () => {
           </div>
         ))}
       </div>
+
+      {/* Doctor details modal */}
       <DoctorDetailsModal
         isOpen={isModalOpen}
         doctor={selectedDoctor}
         onClose={handleCloseModal}
       />
-      <CreateDoctor showModal={showModal} setShowModal={setShowModal} />
+
+      {/* Add doctor modal */}
+      {showCreateDoctor && (
+        <CreateDoctor onClose={() => setShowCreateDoctor(false)} />
+      )}
     </div>
   );
 };

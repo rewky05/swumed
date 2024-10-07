@@ -1,119 +1,188 @@
 import { useState } from "react";
-import { push, ref, set } from "firebase/database";
-import { database } from "../../backend/firebase";
+import { getDatabase, ref as dbRef, set } from "firebase/database";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signOut,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import { storage } from "../../backend/firebase";
 
-const CreateDoctor = ({ showModal, setShowModal }) => {
-  const [newDoctor, setNewDoctor] = useState({
+import { useUserContext } from "../context/UserContext";
+import { useAuthContext } from "../context/AuthContext";
+
+const CreateDoctor = ({ onClose }) => {
+  const { user } = useUserContext();
+  const { currentUser } = useAuthContext();
+  const { hospital_id, clinic_id, branch_id } = user;
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+
+
+  const [doctorData, setDoctorData] = useState({
     name: "",
-    email: "",
-    consultationDays: "",
     specialty: "",
-    imageUrl: "",
-    branch_id: "",
-    hospital_id: "",
-    providerType: "hospital", 
+    consultationDays: "",
+    imageUrl: imageFile,
   });
 
-  const handleNewDoctorChange = (e) => {
-    const { name, value } = e.target;
-    setNewDoctor((prev) => ({ ...prev, [name]: value }));
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const storageRfrnc = storageRef(storage, `doctors/${file.name}`);
+      await uploadBytes(storageRfrnc, file);
+      const url = await getDownloadURL(storageRfrnc);
+      setImageFile(url);
+    }
   };
 
-  const handleSaveDoctor = async () => {
-    const newDoctorRef = push(ref(database, "doctors"));
-    await set(newDoctorRef, {
-      name: newDoctor.name,
-      account: { email: newDoctor.email },
-      consultationDays: newDoctor.consultationDays,
-      specialty: newDoctor.specialty,
-      imageUrl: newDoctor.imageUrl,
-      healthcareProvider: {
-        branch_id: newDoctor.branch_id,
-        hospital_id: newDoctor.hospital_id,
-        providerType: newDoctor.providerType,
-      },
-    });
-    setShowModal(false); 
+  const handleSubmit = async () => {
+    const db = getDatabase();
+    const auth = getAuth();
+
+    try {
+      const currentEmail = currentUser.email;
+      const currentPassword = prompt(
+        "Please enter your password for re-authentication"
+      );
+
+      const secondaryAuth = getAuth();
+      await createUserWithEmailAndPassword(secondaryAuth, email, password);
+
+      const doctorId = secondaryAuth.currentUser.uid;
+      const today = new Date().toLocaleDateString("en-US");
+
+      const newDoctor = {
+        account: {
+          email,
+        },
+        consultationDays: doctorData.consultationDays,
+        date: today,
+        healthcareProvider: {
+          branch_id,
+          clinic_id: clinic_id || null,
+          hospital_id: hospital_id || null,
+          providerType: clinic_id ? "clinic" : "hospital",
+        },
+        imageUrl: imageFile,
+        name: doctorData.name,
+        specialty: doctorData.specialty,
+      };
+
+      await set(dbRef(db, `doctors/${doctorId}`), newDoctor);
+      console.log("Doctor created:", newDoctor);
+
+      const doctorPath = `${clinic_id ? "clinics" : "hospitals"}/${
+        clinic_id ? clinic_id : hospital_id
+      }/branch/${branch_id}/doctors/${doctorId}`;
+      await set(dbRef(db, doctorPath), true);
+
+      await signOut(secondaryAuth);
+
+      await signInWithEmailAndPassword(auth, currentEmail, currentPassword);
+
+      // onClose();
+    } catch (error) {
+      console.error("Error creating doctor:", error);
+    }
   };
 
   return (
-    showModal && (
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-6 rounded-md shadow-md w-[650px]">
-          <h2 className="text-xl mb-4">Add New Doctor</h2>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="modal-content bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold text-primary_maroon mb-4">
+          Add Doctor
+        </h2>
+
+        <input
+          type="text"
+          placeholder="Doctor's Name"
+          value={doctorData.name}
+          onChange={(e) =>
+            setDoctorData({ ...doctorData, name: e.target.value })
+          }
+          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
+        />
+
+        <input
+          type="text"
+          placeholder="Specialty"
+          value={doctorData.specialty}
+          onChange={(e) =>
+            setDoctorData({ ...doctorData, specialty: e.target.value })
+          }
+          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
+        />
+
+        <input
+          type="text"
+          placeholder="Consultation Days"
+          value={doctorData.consultationDays}
+          onChange={(e) =>
+            setDoctorData({ ...doctorData, consultationDays: e.target.value })
+          }
+          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
+        />
+
+        {/* <input
+          type="text"
+          placeholder="Image URL"
+          value={doctorData.imageUrl}
+          onChange={(e) =>
+            setDoctorData({ ...doctorData, imageUrl: e.target.value })
+          }
+          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
+        /> */}
+
+        <div className="flex flex-col">
+          <label>Profile Image</label>
           <input
-            type="text"
-            name="name"
-            value={newDoctor.name}
-            onChange={handleNewDoctorChange}
-            placeholder="Doctor's Name"
-            className="border p-2 w-full mb-2"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="border rounded-md p-2"
           />
-          <input
-            type="email"
-            name="email"
-            value={newDoctor.email}
-            onChange={handleNewDoctorChange}
-            placeholder="Email"
-            className="border p-2 w-full mb-2"
-          />
-          <input
-            type="text"
-            name="consultationDays"
-            value={newDoctor.consultationDays}
-            onChange={handleNewDoctorChange}
-            placeholder="Consultation Days"
-            className="border p-2 w-full mb-2"
-          />
-          <input
-            type="text"
-            name="specialty"
-            value={newDoctor.specialty}
-            onChange={handleNewDoctorChange}
-            placeholder="Specialty"
-            className="border p-2 w-full mb-2"
-          />
-          <input
-            type="text"
-            name="imageUrl"
-            value={newDoctor.imageUrl}
-            onChange={handleNewDoctorChange}
-            placeholder="Image URL"
-            className="border p-2 w-full mb-2"
-          />
-          <input
-            type="text"
-            name="branch_id"
-            value={newDoctor.branch_id}
-            onChange={handleNewDoctorChange}
-            placeholder="Branch ID"
-            className="border p-2 w-full mb-2"
-          />
-          <input
-            type="text"
-            name="hospital_id"
-            value={newDoctor.hospital_id}
-            onChange={handleNewDoctorChange}
-            placeholder="Hospital ID"
-            className="border p-2 w-full mb-4"
-          />
-          <div className="flex justify-end gap-2">
-            <button
-              className="px-4 py-2 bg-gray-500 text-white rounded-md"
-              onClick={() => setShowModal(false)}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 bg-primary_maroon text-white rounded-md"
-              onClick={handleSaveDoctor}
-            >
-              Save
-            </button>
-          </div>
+        </div>
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
+        />
+
+        <div className="flex justify-between">
+          <button
+            onClick={handleSubmit}
+            className="submit-btn bg-primary_maroon text-white py-2 px-4 rounded hover:bg-highlight_pink transition duration-200"
+          >
+            Add Doctor
+          </button>
+          <button
+            onClick={onClose}
+            className="cancel-btn bg-gray-300 text-black py-2 px-4 rounded hover:bg-gray-400 transition duration-200"
+          >
+            Cancel
+          </button>
         </div>
       </div>
-    )
+    </div>
   );
 };
 

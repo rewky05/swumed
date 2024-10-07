@@ -1,5 +1,5 @@
 import { useContext, createContext, useState, useCallback } from 'react';
-import { getDatabase, ref, onValue } from 'firebase/database'; // Firebase methods
+import { getDatabase, ref, onValue } from 'firebase/database'; 
 
 const PatientContext = createContext();
 
@@ -10,11 +10,11 @@ export const usePatientContext = () => {
 export const PatientProvider = ({ children }) => {
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [patients, setPatients] = useState([]); // This is the state
+  const [patients, setPatients] = useState([]); 
 
   const fetchPatients = useCallback(async () => {
     const db = getDatabase();
-    const patientsRef = ref(db, 'patients'); // Reference to the patients node
+    const patientsRef = ref(db, 'patients');
 
     return new Promise((resolve, reject) => {
       onValue(
@@ -26,10 +26,10 @@ export const PatientProvider = ({ children }) => {
               ...patientsData[key],
               id: key,
             }));
-            setPatients(patientsArray); // Setting the state
+            setPatients(patientsArray);
             resolve(patientsArray);
           } else {
-            setPatients([]); // If no data, set to empty array
+            setPatients([]);
             resolve([]);
           }
         },

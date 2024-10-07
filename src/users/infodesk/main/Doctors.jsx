@@ -1,174 +1,75 @@
-import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
-import { TiArrowSortedDown } from "react-icons/ti";
+import { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
-import { database } from "../../../backend/firebase";
 import DoctorDetailsModal from "../../modals/DoctorDetails";
-import CreateDoctorModal from "../../modals/CreateDoctor";
+import CreateDoctor from "../../modals/CreateDoctor";
 
-import { useUserContext } from "../../../users/context/UserContext";
-import { useProviderContext } from "../../../users/context/ProviderContext";
+import { useAuthContext } from "../../context/AuthContext";
+import { useUserContext } from "../../context/UserContext";
+import { useDoctorContext } from "../../context/DoctorContext";
 
 const Doctors = () => {
-  const { user } = useUserContext(); 
-  const { healthcareProviderName, setHealthcareProviderName } = useProviderContext();
-  const [doctors, setDoctors] = useState([]);
+  const { currentUser, loading: authLoading } = useAuthContext();
+  const { user, loading: userLoading } = useUserContext();
+  const { doctors, loading: doctorsLoading } = useDoctorContext();
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [specialties, setSpecialties] = useState([]);
-  const [consultationDays, setConsultationDays] = useState([]);
-  const [selectedSpecialty, setSelectedSpecialty] = useState("");
-  const [selectedConsultationDay, setSelectedConsultationDay] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); // State for create doctor modal
-
-  useEffect(() => {
-    if (!user) return; // If no user, exit
-
-    const doctorsRef = ref(database, "doctors");
-    const hospitalsRef = ref(database, "hospitals");
-
-    if (user?.hospital_id) {
-      onValue(hospitalsRef, (snapshot) => {
-        const hospitalsData = snapshot.val();
-        const hospitalData = hospitalsData?.[user.hospital_id];
-        if (hospitalData && hospitalData.name !== healthcareProviderName) {
-          setHealthcareProviderName(hospitalData.name);
-        }
-      });
-    } else if (user?.clinic_id) {
-      const clinicsRef = ref(database, "clinics");
-      onValue(clinicsRef, (snapshot) => {
-        const clinicsData = snapshot.val();
-        const clinicData = clinicsData?.[user.clinic_id];
-        if (clinicData && clinicData.name !== healthcareProviderName) {
-          setHealthcareProviderName(clinicData.name);
-        }
-      });
-    }
-
-    onValue(doctorsRef, (snapshot) => {
-      const data = snapshot.val();
-      const userHealthcareProviderId = user?.hospital_id || user?.clinic_id;
-
-      if (data && userHealthcareProviderId) {
-        const doctorsArray = Object.keys(data)
-          .filter((key) => {
-            const doctor = data[key];
-            return (
-              doctor.healthcareProvider &&
-              (doctor.healthcareProvider.hospital_id === userHealthcareProviderId ||
-                doctor.healthcareProvider.clinic_id === userHealthcareProviderId)
-            );
-          })
-          .map((key) => ({ id: key, ...data[key] }));
-
-        setDoctors(doctorsArray);
-
-        const uniqueSpecialties = [...new Set(doctorsArray.map((doc) => doc.specialty))];
-        const uniqueConsultationDays = [
-          ...new Set(doctorsArray.flatMap((doc) => doc.consultationDays || [])),
-        ];
-
-        setSpecialties(uniqueSpecialties);
-        setConsultationDays(uniqueConsultationDays);
-      }
-    });
-  }, [user, healthcareProviderName]);
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleSpecialtyChange = (e) => {
-    setSelectedSpecialty(e.target.value);
-  };
-
-  const handleConsultationDayChange = (e) => {
-    setSelectedConsultationDay(e.target.value);
-  };
+  const [showModal, setShowModal] = useState(false);
+  const [showCreateDoctor, setShowCreateDoctor] = useState(false);
 
   const handleDoctorClick = (doctor) => {
+    console.log("Doctor clicked:", doctor);
     setSelectedDoctor(doctor);
     setIsModalOpen(true);
   };
 
   const handleAddDoctor = () => {
-    setShowModal(true);
+    console.log("Add Doctor button clicked");
+    setShowCreateDoctor(true);
   };
 
   const handleCloseModal = () => {
+    console.log("Closing modals");
     setIsModalOpen(false);
     setShowModal(false);
   };
 
-  const filteredDoctors = doctors.filter((doctor) => {
-    const matchesSearchTerm = doctor.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesSpecialty = selectedSpecialty ? doctor.specialty === selectedSpecialty : true;
-    const matchesConsultationDay = selectedConsultationDay
-      ? (doctor.consultationDays || []).includes(selectedConsultationDay)
-      : true;
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    console.log("Search term updated:", term);
+    setSearchTerm(term);
+  };
 
-    return matchesSearchTerm && matchesSpecialty && matchesConsultationDay;
-  });
+  const filteredDoctors = doctors.filter(
+    (doctor) =>
+      doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.consultationDays.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (authLoading || userLoading || doctorsLoading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold p-1">Doctor List</h2>
+        <h2 className="text-2xl font-semibold p-1">Doctor Search</h2>
         <button
-          className="bg-primary_maroon rounded-md text-white py-2 px-2 flex items-center"
+          className="bg-primary_maroon rounded-md text-white py-2 px-5 flex items-center"
           onClick={handleAddDoctor}
         >
-          <IoMdAdd size={20} />
+          <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
         </button>
       </div>
 
-      <div className="flex items-center mb-4">
-        <input
-          type="text"
-          placeholder="Search Doctors"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="border border-gray-300 rounded-md p-2 w-[30%] mr-4"
-        />
-        <div className="relative">
-          <select
-            className="appearance-none bg-primary_maroon rounded-md text-white py-2 mx-2 px-5 pr-7 flex items-center"
-            value={selectedSpecialty}
-            onChange={handleSpecialtyChange}
-          >
-            <option value="">Specialty</option>
-            {specialties.map((specialty) => (
-              <option key={specialty} value={specialty}>
-                {specialty}
-              </option>
-            ))}
-          </select>
-          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-            <TiArrowSortedDown size={20} className="text-white" />
-          </span>
-        </div>
-        <div className="relative">
-          <select
-            className="appearance-none bg-primary_maroon rounded-md text-white py-2 mx-2 px-5 pr-7 flex items-center"
-            value={selectedConsultationDay}
-            onChange={handleConsultationDayChange}
-          >
-            <option value="">Consultation Day</option>
-            {consultationDays.map((day) => (
-              <option key={day} value={day}>
-                {day}
-              </option>
-            ))}
-          </select>
-          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-            <TiArrowSortedDown size={20} className="text-white" />
-          </span>
-        </div>
-      </div>
+      <input
+        type="text"
+        placeholder="Search Doctors"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {filteredDoctors.map((doctor) => (
@@ -179,11 +80,10 @@ const Doctors = () => {
             <div className="flex flex-col justify-between">
               <div className="p-4">
                 <h1 className="text-xl py-2">{doctor.name}</h1>
+                <h2 className="text-lightgray">{doctor.specialty}</h2>
                 <h2 className="text-lightgray">
-                  {doctor.specialty} at {healthcareProviderName}
+                  Available for consultations {doctor.consultationDays}
                 </h2>
-                <h2 className="text-lightgray">Available for consultations</h2>
-                <h2 className="text-lightgray">{doctor.consultationDays}</h2>
               </div>
               <div className="p-4">
                 <button
@@ -197,21 +97,25 @@ const Doctors = () => {
             <div className="py-2 px-4">
               <img
                 src={doctor.imageUrl}
-                alt={doctor.name}
-                className="w-[150px] h-[200px] object-cover rounded-md"
+                alt={`${doctor.name}`}
+                className="w-[150px] h-[200px] object-cover object-center"
               />
             </div>
           </div>
         ))}
       </div>
 
-      {/* Modals */}
+      {/* Doctor details modal */}
       <DoctorDetailsModal
         isOpen={isModalOpen}
         doctor={selectedDoctor}
         onClose={handleCloseModal}
       />
-      <CreateDoctorModal showModal={showModal} setShowModal={handleCloseModal} />
+
+      {/* Add doctor modal */}
+      {showCreateDoctor && (
+        <CreateDoctor onClose={() => setShowCreateDoctor(false)} />
+      )}
     </div>
   );
 };

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { getDatabase, ref, set, push } from "firebase/database";
-import { useUserContext } from "../context/UserContext";  // Use UserContext instead of ProviderContext
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { useUserContext } from "../context/UserContext"; 
 
 const CreatePatient = ({ onClose }) => {
-  const { user } = useUserContext(); // Get user details from UserContext
-  const { hospital_id, clinic_id, branch_id, providerType } = user; // Destructure the necessary data from user
+  const { user } = useUserContext(); 
+  const { hospital_id, clinic_id, branch_id, providerType } = user; 
   console.log(hospital_id, clinic_id, branch_id, providerType);
 
   const [generalData, setGeneralData] = useState({

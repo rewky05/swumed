@@ -1,20 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdPerson } from "react-icons/md";
-// import { getAuth } from "firebase/auth";
-import { getDatabase, ref, get } from "firebase/database";
+import { useAuthContext } from "./context/AuthContext";  // Use AuthContext
+import { useUserContext } from "./context/UserContext";  // Use UserContext
 import { sendPasswordResetEmail } from "firebase/auth";
-import { useUserContext } from "./context/UserContext"; 
 
 const Settings = () => {
-  const { user } = useUserContext(); 
+  const { currentUser } = useAuthContext(); // Access currentUser from AuthContext
+  const { user: userDetails } = useUserContext(); // Access user details from UserContext
   const [verifEmail, setVerifEmail] = useState("");
   const [error, setError] = useState("");
   const [forgotPassword, setForgotPassword] = useState(false);
 
+  // Handle forgot password
   const handleForgotPassword = async () => {
-    if (user?.email === verifEmail) {
+    if (currentUser?.email === verifEmail) {
       try {
-        await sendPasswordResetEmail(user.auth, verifEmail);
+        await sendPasswordResetEmail(currentUser.auth, verifEmail); // Use currentUser.auth if needed
         alert("Password reset email sent.");
       } catch (err) {
         setError("Error sending password reset email. Please try again.");
@@ -24,48 +25,8 @@ const Settings = () => {
     }
   };
 
-  const [userDetails, setUserDetails] = useState({
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    role: "",
-  });
-
-  useEffect(() => {
-    const db = getDatabase();
-    const userId = user?.uid; 
-
-    if (userId) {
-      const superadminRef = ref(db, `superadmins/${userId}`);
-      const staffRef = ref(db, `staff/${userId}`);
-
-      get(superadminRef).then((snapshot) => {
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
-          setUserDetails({
-            fullName: userData.name || "N/A",
-            phoneNumber: userData.number || "N/A",
-            email: user.email, 
-            role: userData.role || "N/A",
-          });
-        } else {
-          get(staffRef).then((snapshot) => {
-            if (snapshot.exists()) {
-              const userData = snapshot.val();
-              setUserDetails({
-                fullName: userData.name || "N/A",
-                phoneNumber: userData.number || "N/A",
-                email: user.email, 
-                role: userData.role || "N/A",
-              });
-            } else {
-              console.log("No user data found.");
-            }
-          });
-        }
-      });
-    }
-  }, [user]); 
+  // If there's no user data, don't render
+  if (!userDetails) return <p>Loading...</p>;
 
   return (
     <div className="p-8">
@@ -76,7 +37,7 @@ const Settings = () => {
         </div>
         <div className="flex justify-center items-center p-6">
           <div className="rounded-full bg-primary_maroon text-white p-6">
-            <MdPerson size={100} />
+            <MdPerson size={100} className="" />
           </div>
         </div>
         {error && <p className="text-red-500 text-center p-2">{error}</p>}
@@ -84,22 +45,22 @@ const Settings = () => {
           <div className="flex justify-between">
             <div className="flex flex-col p-4 px-20 pr-36">
               <h2 className="text-lightgray">Full Name</h2>
-              <h2>{userDetails.fullName}</h2>
+              <h2>{userDetails.name || "N/A"}</h2>
             </div>
             <div className="flex flex-col p-4 px-20">
               <h2 className="text-lightgray">Phone Number</h2>
-              <h2>{userDetails.phoneNumber}</h2>
+              <h2>{userDetails.number || "N/A"}</h2>
             </div>
           </div>
 
           <div className="flex flex-col p-4 px-20 pr-36">
             <h2 className="text-lightgray">Email</h2>
-            <h2>{userDetails.email}</h2>
+            <h2 className="">{currentUser?.email || "N/A"}</h2>
           </div>
 
           <div className="flex flex-col p-4 px-20 pr-36">
             <h2 className="text-lightgray">Role</h2>
-            <h2>{userDetails.role}</h2>
+            <h2 className="">{userDetails.role || "N/A"}</h2>
           </div>
         </div>
 

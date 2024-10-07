@@ -18,10 +18,12 @@ import DashboardPhilhealth from "./users/philhealth/Dashboard";
 import Accounts from "./users/superadmin/accounts/Accounts";
 import HealthcareProvider from "./users/superadmin/accounts/HealthcareProvider";
 
+// Import the context providers
 import { UserProvider } from "./users/context/UserContext";
 import { PatientProvider } from "./users/context/PatientContext";
 import { AuthProvider } from "./users/context/AuthContext";
 import { MedicalRecordsProvider } from "./users/context/MedicalRecordsContext";
+import { DoctorProvider } from "./users/context/DoctorContext";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -51,31 +53,95 @@ const App = () => {
 
   return (
     <Router>
+      {/* Wrap everything with AuthProvider */}
       <AuthProvider value={{ user, setUser }}>
         <UserProvider>
           <PatientProvider>
             <MedicalRecordsProvider>
-              <Routes>
-                <Route path="/" element={<Navigate to="/login" />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/infodesk-dashboard" element={<Layout />}>
-                  <Route index element={<DashboardInfodesk />} />
-                  <Route path="patients" element={<Patients />} />
-                  <Route path="doctors" element={<Doctors />} />
-                </Route>
-                <Route path="/superadmin-dashboard" element={<Layout />}>
-                  <Route index element={<DashboardSuperadmin />} />
-                  <Route path="accounts" element={<Accounts />} />
+              <DoctorProvider>
+                <Routes>
                   <Route
-                    path="healthcare-provider"
-                    element={<HealthcareProvider />}
+                    path="/"
+                    element={
+                      user ? (
+                        user.role === "superadmin" ? (
+                          <Navigate to="/superadmin-dashboard" />
+                        ) : user.role === "Information Desk Staff" ? (
+                          <Navigate to="/infodesk-dashboard" />
+                        ) : user.role === "Philhealth Staff" ? (
+                          <Navigate to="/philhealth-dashboard" />
+                        ) : (
+                          <p>Unauthorized</p>
+                        )
+                      ) : (
+                        <Login />
+                      )
+                    }
                   />
-                </Route>
-                <Route path="/philhealth-dashboard" element={<Layout />}>
-                  <Route index element={<DashboardPhilhealth />} />
-                </Route>
-                <Route path="settings" element={<Settings />} />
-              </Routes>
+
+                  {user && (
+                    <Route path="/" element={<Layout user={user} />}>
+                      {/* Superadmin Routes */}
+                      {user.role === "superadmin" && (
+                        <>
+                          <Route
+                            path="superadmin-dashboard"
+                            element={<DashboardSuperadmin />}
+                          />
+                          <Route path="accounts" element={<Accounts />} />
+                          <Route
+                            path="healthcare-provider"
+                            element={<HealthcareProvider />}
+                          />
+                        </>
+                      )}
+
+                      {/* Information Desk Staff Routes */}
+                      {user.role === "Information Desk Staff" && (
+                        <>
+                          <Route
+                            path="infodesk-dashboard"
+                            element={<DashboardInfodesk />}
+                          />
+                          <Route path="patients" element={<Patients />} />
+                          <Route
+                            path="doctors"
+                            element={<Doctors user={user} />}
+                          />
+                        </>
+                      )}
+
+                      {/* Philhealth Staff Routes */}
+                      {user.role === "Philhealth Staff" && (
+                        <>
+                          <Route
+                            path="philhealth-dashboard"
+                            element={<DashboardPhilhealth />}
+                          />
+                        </>
+                      )}
+
+                      {/* Settings accessible to all roles */}
+                      <Route path="settings" element={<Settings />} />
+
+                      <Route
+                        path="*"
+                        element={
+                          ![
+                            "Superadmin",
+                            "Information Desk Staff",
+                            "Philhealth Staff",
+                          ].includes(user.role) ? (
+                            <p>Unauthorized</p>
+                          ) : (
+                            <Navigate to="/" />
+                          )
+                        }
+                      />
+                    </Route>
+                  )}
+                </Routes>
+              </DoctorProvider>
             </MedicalRecordsProvider>
           </PatientProvider>
         </UserProvider>

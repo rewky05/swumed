@@ -130,7 +130,7 @@ const Patients = () => {
         >
           <IoMdAdd size={20} /> <span className="ml-1">Add Patient</span>
         </button>
-        <Link to="/infodesk-dashboard/patients">
+        <Link to="patients">
           <button className="bg-primary_maroon rounded-md text-white py-2 px-7 flex items-center">
             <FaEye size={20} /> <span className="ml-1">View All</span>
           </button>
