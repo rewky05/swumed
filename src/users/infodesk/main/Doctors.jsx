@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
-import DoctorDetailsModal from "../../modals/DoctorDetails";
-import CreateDoctor from "../../modals/CreateDoctor";
+import DoctorDetailsModal from "../../modals/doctor/DoctorDetails";
+import CreateDoctor from "../../modals/doctor/CreateDoctor";
 
 import { useAuthContext } from "../../context/AuthContext";
 import { useUserContext } from "../../context/UserContext";
@@ -54,11 +54,8 @@ const Doctors = () => {
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold p-1">Doctor Search</h2>
-        <button
-          className="main-button"
-          onClick={handleAddDoctor}
-        >
+        <h2 className="text-2xl font-semibold p-1">Doctors</h2>
+        <button className="main-button" onClick={handleAddDoctor}>
           <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
         </button>
       </div>
@@ -105,14 +102,12 @@ const Doctors = () => {
         ))}
       </div>
 
-      {/* Doctor details modal */}
       <DoctorDetailsModal
         isOpen={isModalOpen}
         doctor={selectedDoctor}
         onClose={handleCloseModal}
       />
 
-      {/* Add doctor modal */}
       {showCreateDoctor && (
         <CreateDoctor onClose={() => setShowCreateDoctor(false)} />
       )}

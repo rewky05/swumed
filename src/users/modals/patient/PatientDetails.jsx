@@ -1,4 +1,3 @@
-// PatientDetails.jsx
 import PatientMedicalRecords from "./PatientMedicalRecords";
 
 const PatientDetails = ({ patient, onClose }) => {

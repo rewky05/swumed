@@ -1,47 +1,34 @@
-import { useState } from "react";
-import { FaEye } from "react-icons/fa";
-import { IoMdAdd } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { ref, onValue } from "firebase/database";
+import { database } from "../../../backend/firebase";
 import DoctorDetailsModal from "../../modals/doctor/DoctorDetails";
-import CreateDoctor from "../../modals/doctor/CreateDoctor";
-
-import { useAuthContext } from "../../context/AuthContext";
-import { useUserContext } from "../../context/UserContext";
-import { useDoctorContext } from "../../context/DoctorContext";
 
 const Doctors = () => {
-  const { currentUser, loading: authLoading } = useAuthContext();
-  const { user, loading: userLoading } = useUserContext();
-  const { doctors, loading: doctorsLoading } = useDoctorContext();
-
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [showCreateDoctor, setShowCreateDoctor] = useState(false);
 
-  const handleDoctorClick = (doctor) => {
-    console.log("Doctor clicked:", doctor);
-    setSelectedDoctor(doctor);
-    setIsModalOpen(true);
-  };
+  useEffect(() => {
+    const doctorsRef = ref(database, "doctors");
 
-  const handleAddDoctor = () => {
-    console.log("Add Doctor button clicked");
-    setShowCreateDoctor(true);
-  };
+    const unsubscribe = onValue(doctorsRef, (snapshot) => {
+      const doctorsData = snapshot.val();
+      if (doctorsData) {
+        const doctorList = Object.keys(doctorsData).map((doctorId) => ({
+          id: doctorId,
+          ...doctorsData[doctorId],
+        }));
+        setDoctors(doctorList);
+      } else {
+        setDoctors([]);
+      }
+      setLoading(false);
+    });
 
-  const handleCloseModal = () => {
-    console.log("Closing modals");
-    setIsModalOpen(false);
-    setShowModal(false);
-  };
-
-  const handleSearchChange = (e) => {
-    const term = e.target.value;
-    console.log("Search term updated:", term);
-    setSearchTerm(term);
-  };
+    return () => unsubscribe();
+  }, []);
 
   const filteredDoctors = doctors.filter(
     (doctor) =>
@@ -49,24 +36,26 @@ const Doctors = () => {
       doctor.consultationDays.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (authLoading || userLoading || doctorsLoading) {
+  const handleDoctorClick = (doctor) => {
+    setSelectedDoctor(doctor);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  if (loading) {
     return <p>Loading...</p>;
   }
 
   return (
     <div className="p-8">
-      <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold p-1">Doctor Search</h2>
-        <button className="main-button" onClick={handleAddDoctor}>
-          <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
-        </button>
-        <Link to="/doctors">
-          <button className="main-button">
-            <FaEye size={20} /> <span className="ml-2">View All</span>
-          </button>
-        </Link>
-      </div>
-
+      <h2 className="text-2xl font-semibold p-1 mb-4">Doctors</h2>
       <input
         type="text"
         placeholder="Search Doctors"
@@ -74,9 +63,8 @@ const Doctors = () => {
         onChange={handleSearchChange}
         className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
       />
-      {/* grid grid-cols-2 md:grid-cols-3 gap-4 h-[250px] */}
-      {/* flex flex-row gap-4 overflow-x-auto */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-[250px] overflow-y-auto">
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {filteredDoctors.map((doctor) => (
           <div
             key={doctor.id}
@@ -115,10 +103,6 @@ const Doctors = () => {
         doctor={selectedDoctor}
         onClose={handleCloseModal}
       />
-
-      {showCreateDoctor && (
-        <CreateDoctor onClose={() => setShowCreateDoctor(false)} />
-      )}
     </div>
   );
 };

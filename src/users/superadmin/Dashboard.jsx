@@ -119,6 +119,7 @@ const Dashboard = () => {
           <div className="shadow-lg p-4 rounded-lg bg-white">
             <h3 className="text-lg font-semibold mb-4">Hospitals vs Clinics</h3>
             <Bar
+            className=""
               data={{
                 labels: ["Hospitals", "Clinics"],
                 datasets: [
@@ -126,14 +127,11 @@ const Dashboard = () => {
                     label: "Count",
                     data: [hospitalsCount, clinicsCount],
                     backgroundColor: [
-                      "rgba(75, 192, 192, 0.6)",
-                      "rgba(54, 162, 235, 0.6)",
+                      "rgba(128, 118, 118)",
+                      "rgba(128, 118, 118)",
                     ],
-                    borderColor: [
-                      "rgba(75, 192, 192, 1)",
-                      "rgba(54, 162, 235, 1)",
-                    ],
-                    borderWidth: 5,
+                    
+                    
                     borderRadius: 60,
                   },
                 ],
@@ -143,11 +141,17 @@ const Dashboard = () => {
                 scales: {
                   y: {
                     beginAtZero: true,
+                    grid: {
+                      color: "rgba(102, 24, 30, 1)" 
+                    }
                   },
                 },
                 plugins: {
                   legend: {
                     display: false,
+                    grid: {
+                      color: "rgba(102, 24, 30, 1)" 
+                    }
                   },
                 },
               }}

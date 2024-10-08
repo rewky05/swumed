@@ -1,5 +1,4 @@
 import { useUserContext } from "../users/context/UserContext";
-// import { ProviderContext } from "../users/context/ProviderContext";
 import Logo from "../assets/swumed-logo.png";
 import { IoSettingsOutline, IoPersonOutline } from "react-icons/io5";
 import { FaCircle } from "react-icons/fa";

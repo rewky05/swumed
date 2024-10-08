@@ -1,9 +1,5 @@
 import { useState, useEffect } from "react";
-import { IoMdAdd } from "react-icons/io";
 import PatientDetailsModal from "../../modals/patient/PatientDetails";
-import CreatePatient from "../../modals/patient/CreatePatient";
-import DischargePatient from "../../modals/patient/DischargePatient";
-import ClinicalSummary from "../../modals/ClinicalSummary";
 import { useUserContext } from "../../context/UserContext";
 import { useMedicalRecordsContext } from "../../context/MedicalRecordsContext";
 import { getDatabase, ref, onValue } from "firebase/database";
@@ -11,16 +7,10 @@ import { getDatabase, ref, onValue } from "firebase/database";
 const Patients = () => {
   const { user } = useUserContext();
   const { medicalRecords, setMedicalRecords } = useMedicalRecordsContext();
-  console.log(medicalRecords, setMedicalRecords);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
   const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
-  const [showSummaryModal, setShowSummaryModal] = useState(false);
-  const [showDischargePatientModal, setShowDischargePatientModal] =
-    useState(false);
-  const [patientToDischarge, setPatientToDischarge] = useState(null);
   const [doctorNames, setDoctorNames] = useState({});
 
   const fetchMedicalRecords = () => {
@@ -60,23 +50,14 @@ const Patients = () => {
     });
   };
 
-  const handleDischargePatient = (patient, recordId) => {
-    setPatientToDischarge({ patient, recordId });
-    setShowDischargePatientModal(true);
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
   const filteredPatients = medicalRecords
-    .filter((record) =>
-      Object.values(record.medicalRecords || {}).some(
-        (mr) =>
-          mr.healthcareProvider?.hospital_id === user.hospital_id &&
-          mr.healthcareProvider?.branch_id === user.branch_id
-      )
-    )
+    //   .filter((record) =>
+    //     Object.values(record.medicalRecords || {}).some(
+    //       (mr) =>
+    //         mr.healthcareProvider?.hospital_id === user.hospital_id &&
+    //         mr.healthcareProvider?.branch_id === user.branch_id
+    //     )
+    //   )
     .filter((patient) => {
       const patientName = patient.generalData?.name?.toLowerCase() || "";
       const philhealthNumber = patient.generalData?.philhealthNumber || "";
@@ -102,36 +83,19 @@ const Patients = () => {
       );
     });
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   const handleViewPatientDetails = (patient) => {
     setSelectedPatient(patient);
     setShowPatientDetailsModal(true);
   };
 
-  const handleClinicalSummary = (patient, recordId) => {
-    setSelectedPatient({ patient, recordId });
-    setShowSummaryModal(true);
-  };
-
-  // const isEditableRecord = (record) => {
-  //   if (!record.medicalRecords) return false;
-  //   return Object.values(record.medicalRecords).some(
-  //     (mr) =>
-  //       mr.healthcareProvider?.hospital_id === user.hospital_id &&
-  //       mr.healthcareProvider?.branch_id === user.branch_id &&
-  //       mr.status === "Active"
-  //   );
-  // };
-
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-4">
         <h2 className="text-2xl font-semibold p-1">Patients</h2>
-        <button
-          onClick={() => setShowCreatePatientModal(true)}
-          className="main-button"
-        >
-          <IoMdAdd size={20} /> <span className="ml-1">Add Patient</span>
-        </button>
       </div>
 
       <input
@@ -166,7 +130,6 @@ const Patients = () => {
                   medicalRecord?.healthcareProvider?.assignedDoctor;
                 const doctorName =
                   doctorNames[assignedDoctor] || "To be assigned";
-                // const isEditable = isEditableRecord(patient);
 
                 return (
                   <tr key={patientId} className="border-b">
@@ -179,10 +142,10 @@ const Patients = () => {
                     <td className="p-2">
                       <span
                         className={`${
-                          medicalRecord?.status === "Active"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        } font-semibold`}
+                          medicalRecord?.status === "active"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
                       >
                         {medicalRecord?.status || "N/A"}
                       </span>
@@ -190,41 +153,9 @@ const Patients = () => {
                     <td className="p-2 text-center">
                       <button
                         onClick={() => handleViewPatientDetails(patient)}
-                        className={`action-button ${
-                          doctorName === "To be assigned"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
+                        className="text-blue-500 underline"
                       >
                         View
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleDischargePatient(patient, recordId)
-                        }
-                        className={`action-button ${
-                          doctorName === "To be assigned" ||
-                          medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
-                        // disabled={!isEditable}
-                      >
-                        Discharge
-                      </button>
-                      <button
-                        className={`action-button ${
-                          doctorName === "To be assigned" ||
-                          medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
-                        onClick={() => handleClinicalSummary(patient, recordId)}
-                      >
-                        +Summary
                       </button>
                     </td>
                   </tr>
@@ -232,7 +163,7 @@ const Patients = () => {
               })
             ) : (
               <tr>
-                <td colSpan="6" className="text-center p-4">
+                <td colSpan="6" className="text-center p-2">
                   No patients found
                 </td>
               </tr>
@@ -241,38 +172,10 @@ const Patients = () => {
         </table>
       </div>
 
-      {showCreatePatientModal && (
-        <CreatePatient onClose={() => setShowCreatePatientModal(false)} />
-      )}
-
       {showPatientDetailsModal && (
         <PatientDetailsModal
           patient={selectedPatient}
           onClose={() => setShowPatientDetailsModal(false)}
-        />
-      )}
-
-      {showSummaryModal && (
-        <ClinicalSummary
-          patient={selectedPatient.patient}
-          recordId={selectedPatient.recordId}
-          onConfirm={(patientId, recordId) => {
-            handleClinicalSummary(patientId, recordId);
-            setShowSummaryModal(false);
-          }}
-          onClose={() => setShowSummaryModal(false)}
-        />
-      )}
-
-      {showDischargePatientModal && (
-        <DischargePatient
-          patient={patientToDischarge.patient}
-          recordId={patientToDischarge.recordId}
-          onConfirm={(patientId, recordId) => {
-            handleDischargePatient(patientId, recordId);
-            setShowDischargePatientModal(false);
-          }}
-          onClose={() => setShowDischargePatientModal(false)}
         />
       )}
     </div>

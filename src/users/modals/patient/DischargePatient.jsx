@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue, update } from "firebase/database";
-import { useUserContext } from "../context/UserContext";
+import { useUserContext } from "../../context/UserContext";
 
 const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
   const { user } = useUserContext();
@@ -27,13 +27,15 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
             if (user.hospital_id) {
               return (
                 record.healthcareProvider.hospital_id === user.hospital_id &&
-                record.healthcareProvider.branch_id === user.branch_id && record.status === "Active" 
+                record.healthcareProvider.branch_id === user.branch_id &&
+                record.status === "Active"
               );
             }
             if (user.clinic_id) {
               return (
                 record.healthcareProvider.clinic_id === user.clinic_id &&
-                record.healthcareProvider.branch_id === user.branch_id && record.status === "Active"
+                record.healthcareProvider.branch_id === user.branch_id &&
+                record.status === "Active"
               );
             }
             return false;
@@ -53,7 +55,7 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
 
     if (!medicalRecord) {
       console.error("Medical record not found.");
-      return; 
+      return;
     }
 
     const providerId =
@@ -64,12 +66,12 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
       console.error(
         "Provider ID (either hospital_id or clinic_id) is missing for the medical record."
       );
-      return; 
+      return;
     }
 
     if (!patient || !recordId || !patientId) {
       console.error("Patient or recordId is missing.");
-      return null; 
+      return null;
     }
 
     const db = getDatabase();
@@ -77,7 +79,7 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
     const recordPath = `patients/${patientId}/medicalRecords/${recordId}/status`;
 
     const updates = {};
-    updates[recordPath] = "Discharged"; 
+    updates[recordPath] = "Discharged";
 
     try {
       await update(ref(db), updates);
@@ -122,8 +124,8 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
           </button>
           <button
             onClick={() => {
-              handleDischarge(patient.id, selectedRecordId); 
-              onConfirm(patient.id, selectedRecordId); 
+              handleDischarge(patient.id, selectedRecordId);
+              onConfirm(patient.id, selectedRecordId);
             }}
             className="bg-red-500 text-white py-2 px-4 rounded"
           >

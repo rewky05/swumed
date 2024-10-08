@@ -5,16 +5,11 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  // signOut,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthContext"; 
+import { useAuthContext } from "../../context/AuthContext";
 import { storage } from "../../../backend/firebase";
 import { TiArrowSortedDown } from "react-icons/ti";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"; // Import Firebase Auth functions
 
 const CreateAccount = () => {
   const [role, setRole] = useState("patient");
@@ -38,7 +33,7 @@ const CreateAccount = () => {
   const [nationality, setNationality] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [consultationDays, setConsultationDays] = useState("");
-  const { signIn, signOutUser } = useAuthContext(); 
+  const { signIn, signOutUser } = useAuthContext();
   const navigate = useNavigate();
 
   const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
@@ -205,7 +200,7 @@ const CreateAccount = () => {
       await set(dbRef(db, providerRefPath), true);
 
       await signOutUser();
-      await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
+      await signIn(adminEmail, adminPassword);
 
       navigate("/superadmin-dashboard");
       console.log(
@@ -225,7 +220,9 @@ const CreateAccount = () => {
             onChange={(e) => setRole(e.target.value)}
             className="appearance-none bg-primary_maroon rounded-md text-white py-2 px-5 pr-7 flex items-center"
           >
-            <option value="Information Desk Staff">Information Desk Staff</option>
+            <option value="Information Desk Staff">
+              Information Desk Staff
+            </option>
             <option value="Philhealth Staff">Philhealth Staff</option>
             <option value="Doctor">Doctor</option>
             <option value="patient">Patient</option>
@@ -234,10 +231,9 @@ const CreateAccount = () => {
             <TiArrowSortedDown size={20} className="text-white" />
           </span>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            {/* Fields for Patient Role */}
             {role === "patient" && (
               <>
                 <div className="flex flex-col">
@@ -380,7 +376,6 @@ const CreateAccount = () => {
               </>
             )}
 
-            {/* Fields for Doctor Role */}
             {role === "Doctor" && (
               <>
                 <div className="flex flex-col">
@@ -405,54 +400,6 @@ const CreateAccount = () => {
                     required
                     className="border rounded-md p-2"
                   />
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Provider Type</label>
-                  <select
-                    value={providerType}
-                    onChange={(e) => setProviderType(e.target.value)}
-                    className="border rounded-md p-2"
-                    required
-                  >
-                    <option value="">Select Provider Type</option>
-                    <option value="hospital">Hospital</option>
-                    <option value="clinic">Clinic</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Provider</label>
-                  <select
-                    value={providerId}
-                    onChange={(e) => setProviderId(e.target.value)}
-                    className="border rounded-md p-2"
-                    required
-                  >
-                    <option value="">Select Provider</option>
-                    {providers.map(([id, data]) => (
-                      <option key={id} value={id}>
-                        {data.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Branch</label>
-                  <select
-                    value={branch}
-                    onChange={(e) => setBranch(e.target.value)}
-                    className="border rounded-md p-2"
-                    required
-                  >
-                    <option value="">Select Branch</option>
-                    {branches.map(([id, name]) => (
-                      <option key={id} value={id}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
 
                 <div className="flex flex-col">
@@ -490,8 +437,8 @@ const CreateAccount = () => {
               </>
             )}
 
-            {/* Fields for Staff Role */}
-            {(role === "Information Desk Staff" || role === "Philhealth Staff") && (
+            {(role === "Information Desk Staff" ||
+              role === "Philhealth Staff") && (
               <>
                 <div className="flex flex-col">
                   <label>Name</label>
@@ -579,6 +526,54 @@ const CreateAccount = () => {
                 className="border rounded-md p-2"
               />
             </div>
+          </div>
+
+          <div className="flex flex-col">
+            <label>Provider Type</label>
+            <select
+              value={providerType}
+              onChange={(e) => setProviderType(e.target.value)}
+              className="border rounded-md p-2"
+              required
+            >
+              <option value="">Select Provider Type</option>
+              <option value="hospital">Hospital</option>
+              <option value="clinic">Clinic</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col">
+            <label>Provider</label>
+            <select
+              value={providerId}
+              onChange={(e) => setProviderId(e.target.value)}
+              className="border rounded-md p-2"
+              required
+            >
+              <option value="">Select Provider</option>
+              {providers.map(([id, provider]) => (
+                <option key={id} value={id}>
+                  {provider.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col">
+            <label>Branch</label>
+            <select
+              value={branch}
+              onChange={(e) => setBranch(e.target.value)}
+              className="border rounded-md p-2"
+              required
+            >
+              <option value="">Select Branch</option>
+              {branches.map(([id, branchData]) => (
+                <option key={id} value={id}>
+                  {branchData.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <button

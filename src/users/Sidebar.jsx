@@ -1,23 +1,39 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
-import { FaUserMd, FaUsers, FaCogs, FaThLarge } from "react-icons/fa"; 
+import {
+  FaUserMd,
+  FaUsers,
+  FaCogs,
+  FaThLarge,
+  FaChevronDown,
+  FaChevronRight,
+  FaHospital
+} from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
-import { useUserContext } from "./context/UserContext"; 
-// import { ProviderContext } from "./users/context/ProviderContext"; 
+import { useUserContext } from "./context/UserContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const auth = getAuth();
-  const location = useLocation(); 
+  const location = useLocation();
   const [activeItem, setActiveItem] = useState(location.pathname);
+  const [isAccountsOpen, setIsAccountsOpen] = useState(false);
+  const [isProvidersOpen, setIsProvidersOpen] = useState(false);
 
-  const { user } = useUserContext()
-  // const { branch_id, providerType } = useContext(ProviderContext);
+  const { user } = useUserContext();
 
   useEffect(() => {
     setActiveItem(location.pathname);
   }, [location]);
+
+  const toggleAccountsSection = () => {
+    setIsAccountsOpen(!isAccountsOpen);
+  };
+
+  const toggleProvidersSection = () => {
+    setIsProvidersOpen(!isProvidersOpen);
+  };
 
   const handleLogout = () => {
     signOut(auth)
@@ -30,60 +46,181 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 h-screen pt-20 fixed bg-white shadow-lg flex flex-col">
+    <div className={`${user.role === "superadmin" ? 'w-[18rem]' : 'w-64'} h-screen pt-20 fixed bg-white border-r border-r-lightgray border-opacity-10 flex flex-col`}>
       <nav className="flex-grow">
         <ul className="space-y-2 p-4">
-          {/* Superadmin Links */}
+          {/* Superadmin */}
           {user?.role === "superadmin" && (
             <>
               <Link to="/superadmin-dashboard">
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/superadmin-dashboard"
-                      ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+                      ? "bg-red-100 text-primary_maroon font-semibold"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
                   }`}
                 >
                   <FaThLarge className="mr-3" />
                   Dashboard
                 </li>
               </Link>
-              <Link to="/accounts">
-                <li
-                  className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
-                    activeItem === "/accounts"
-                      ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+
+              {/* Accounts */}
+              <div>
+                <button
+                  onClick={toggleAccountsSection}
+                  className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
+                    isAccountsOpen
+                      ? "bg-red-100 text-primary_maroon font-semibold"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
                   }`}
                 >
                   <FaUsers className="mr-3" />
                   Accounts
-                </li>
-              </Link>
-              <Link to="/healthcare-provider">
-                <li
-                  className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
-                    activeItem === "/healthcare-provider"
-                      ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+                  {isAccountsOpen ? (
+                    <FaChevronDown className="ml-auto" />
+                  ) : (
+                    <FaChevronRight className="ml-auto" />
+                  )}
+                </button>
+
+                {isAccountsOpen && (
+                  <div className="ml-6 mt-2 space-y-2">
+                    <Link to="/accounts">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/accounts"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Create Account
+                      </li>
+                    </Link>
+
+                    <Link to="/doctors-superadmin">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/doctors-superadmin"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Doctors
+                      </li>
+                    </Link>
+
+                    <Link to="/patients-superadmin">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/patients-superadmin"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Patients
+                      </li>
+                    </Link>
+
+                    <Link to="/infodesk-superadmin">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/infodesk-superadmin"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Information Desk Staff
+                      </li>
+                    </Link>
+
+                    <Link to="/philhealth-superadmin">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/philhealth-superadmin"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Philhealth Staff
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Healthcare Providers */}
+              <div>
+                <button
+                  onClick={toggleProvidersSection}
+                  className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
+                    isProvidersOpen
+                      ? "bg-red-100 text-primary_maroon font-semibold"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
                   }`}
                 >
-                  <FaUsers className="mr-3" />
+                  <FaHospital className="mr-3" />
                   Healthcare Providers
-                </li>
-              </Link>
+                  {isProvidersOpen ? (
+                    <FaChevronDown className="ml-auto" />
+                  ) : (
+                    <FaChevronRight className="ml-auto" />
+                  )}
+                </button>
+
+                {isProvidersOpen && (
+                  <div className="ml-6 mt-2 space-y-2">
+                    <Link to="/healthcare-provider">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/healthcare-provider"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Add Providers
+                      </li>
+                    </Link>
+
+                    <Link to="/hospitals-superadmin">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/hospitals-superadmin"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Hospitals
+                      </li>
+                    </Link>
+
+                    <Link to="/clinics-superadmin">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/clinics-superadmin"
+                            ? "bg-red-100 text-primary_maroon font-semibold"
+                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                        }`}
+                      >
+                        Clinics
+                      </li>
+                    </Link>
+
+                  </div>
+                )}
+              </div>
             </>
           )}
 
-          {/* Information Desk Staff Links */}
+          {/* Information Desk Staff */}
           {user?.role === "Information Desk Staff" && (
             <>
               <Link to="/infodesk-dashboard">
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/infodesk-dashboard"
-                      ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+                      ? "bg-red-100 text-primary_maroon font-semibold"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
                   }`}
                 >
                   <FaThLarge className="mr-3" />
@@ -95,8 +232,8 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/patients"
-                      ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+                      ? "bg-red-100 text-primary_maroon font-semibold"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -108,8 +245,8 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/doctors"
-                      ? "bg-red-100 text-primary_maroon"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+                      ? "bg-red-100 text-primary_maroon font-semibold"
+                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
                   }`}
                 >
                   <FaUserMd className="mr-3" />
@@ -119,14 +256,14 @@ const Sidebar = () => {
             </>
           )}
 
-          {/* Philhealth Staff Links */}
+          {/* Philhealth Staff */}
           {user?.role === "Philhealth Staff" && (
             <Link to="/philhealth-dashboard">
               <li
                 className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                   activeItem === "/philhealth-dashboard"
-                    ? "bg-red-100 text-primary_maroon"
-                    : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+                    ? "bg-red-100 text-primary_maroon font-semibold"
+                    : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
                 }`}
               >
                 <FaThLarge className="mr-3" />
@@ -139,8 +276,8 @@ const Sidebar = () => {
             <li
               className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                 activeItem === "/settings"
-                  ? "bg-red-100 text-primary_maroon"
-                  : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105"
+                  ? "bg-red-100 text-primary_maroon font-semibold"
+                  : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
               }`}
             >
               <FaCogs className="mr-3" />

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext"; 
 
 const HealthcareProvider = () => {
-  const { currentUser } = useUserContext() 
+  const { user } = useUserContext() 
   const [providerType, setProviderType] = useState("clinics");
   const [name, setName] = useState("");
   const [branches, setBranches] = useState([{ id: 1, name: "", address: "" }]);
@@ -25,7 +25,7 @@ const HealthcareProvider = () => {
     e.preventDefault();
     const db = getDatabase();
 
-    if (!currentUser) {
+    if (!user) {
       console.error("User not logged in.");
       return;
     }

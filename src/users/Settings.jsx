@@ -1,21 +1,20 @@
 import { useState } from "react";
 import { MdPerson } from "react-icons/md";
-import { useAuthContext } from "./context/AuthContext";  // Use AuthContext
-import { useUserContext } from "./context/UserContext";  // Use UserContext
+import { useAuthContext } from "./context/AuthContext"; 
+import { useUserContext } from "./context/UserContext";  
 import { sendPasswordResetEmail } from "firebase/auth";
 
 const Settings = () => {
-  const { currentUser } = useAuthContext(); // Access currentUser from AuthContext
-  const { user: userDetails } = useUserContext(); // Access user details from UserContext
+  const { currentUser } = useAuthContext(); 
+  const { user: userDetails } = useUserContext(); 
   const [verifEmail, setVerifEmail] = useState("");
   const [error, setError] = useState("");
   const [forgotPassword, setForgotPassword] = useState(false);
 
-  // Handle forgot password
   const handleForgotPassword = async () => {
     if (currentUser?.email === verifEmail) {
       try {
-        await sendPasswordResetEmail(currentUser.auth, verifEmail); // Use currentUser.auth if needed
+        await sendPasswordResetEmail(currentUser.auth, verifEmail);
         alert("Password reset email sent.");
       } catch (err) {
         setError("Error sending password reset email. Please try again.");
@@ -25,7 +24,6 @@ const Settings = () => {
     }
   };
 
-  // If there's no user data, don't render
   if (!userDetails) return <p>Loading...</p>;
 
   return (

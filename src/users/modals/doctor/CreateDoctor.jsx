@@ -11,10 +11,10 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
-import { storage } from "../../backend/firebase";
+import { storage } from "../../../backend/firebase";
 
-import { useUserContext } from "../context/UserContext";
-import { useAuthContext } from "../context/AuthContext";
+import { useUserContext } from "../../context/UserContext";
+import { useAuthContext } from "../../context/AuthContext";
 
 const CreateDoctor = ({ onClose }) => {
   const { user } = useUserContext();
@@ -24,7 +24,6 @@ const CreateDoctor = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [imageFile, setImageFile] = useState(null);
-
 
   const [doctorData, setDoctorData] = useState({
     name: "",

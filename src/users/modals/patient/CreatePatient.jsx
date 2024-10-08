@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { getDatabase, ref, set, push } from "firebase/database";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { useUserContext } from "../context/UserContext"; 
+import { useUserContext } from "../../context/UserContext";
 
 const CreatePatient = ({ onClose }) => {
-  const { user } = useUserContext(); 
-  const { hospital_id, clinic_id, branch_id, providerType } = user; 
+  const { user } = useUserContext();
+  const { hospital_id, clinic_id, branch_id, providerType } = user;
   console.log(hospital_id, clinic_id, branch_id, providerType);
 
   const [generalData, setGeneralData] = useState({
@@ -43,11 +42,11 @@ const CreatePatient = ({ onClose }) => {
         [medicalRecordId]: {
           date: today,
           healthcareProvider: {
-            assignedDoctor: "", 
-            branch_id: branch_id, 
-            clinic_id: clinic_id ? clinic_id : null, 
-            hospital_id: hospital_id ? hospital_id : null, 
-            type: clinic_id ? "clinic" : "hospital", 
+            assignedDoctor: "",
+            branch_id: branch_id,
+            clinic_id: clinic_id ? clinic_id : null,
+            hospital_id: hospital_id ? hospital_id : null,
+            type: clinic_id ? "clinic" : "hospital",
           },
           isHidden: false,
           status: "Active",

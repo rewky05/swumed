@@ -11,14 +11,22 @@ import Login from "./Login";
 import Layout from "./users/Layout";
 import Patients from "./users/infodesk/main/Patients";
 import Doctors from "./users/infodesk/main/Doctors";
+
 import Settings from "./users/Settings";
+
 import DashboardSuperadmin from "./users/superadmin/Dashboard";
 import DashboardInfodesk from "./users/infodesk/Dashboard";
 import DashboardPhilhealth from "./users/philhealth/Dashboard";
-import Accounts from "./users/superadmin/accounts/Accounts";
-import HealthcareProvider from "./users/superadmin/accounts/HealthcareProvider";
 
-// Import the context providers
+import Accounts from "./users/superadmin/accounts/Accounts";
+import DoctorsSuperadmin from "./users/superadmin/view-accounts/Doctors";
+import PatientsSuperadmin from "./users/superadmin/view-accounts/Patients";
+import InfodeskSuperadmin from "./users/superadmin/view-accounts/Infodesk";
+import PhilhealthSuperadmin from "./users/superadmin/view-accounts/Philhealth";
+import HealthcareProvider from "./users/superadmin/accounts/HealthcareProvider";
+import ClinicsSuperadmin from "./users/superadmin/view-providers/Clinics";
+import HospitalsSuperadmin from "./users/superadmin/view-providers/Hospitals";
+
 import { UserProvider } from "./users/context/UserContext";
 import { PatientProvider } from "./users/context/PatientContext";
 import { AuthProvider } from "./users/context/AuthContext";
@@ -53,7 +61,6 @@ const App = () => {
 
   return (
     <Router>
-      {/* Wrap everything with AuthProvider */}
       <AuthProvider value={{ user, setUser }}>
         <UserProvider>
           <PatientProvider>
@@ -89,9 +96,35 @@ const App = () => {
                             element={<DashboardSuperadmin />}
                           />
                           <Route path="accounts" element={<Accounts />} />
+
+                          <Route
+                            path="doctors-superadmin"
+                            element={<DoctorsSuperadmin />}
+                          />
+                          <Route
+                            path="patients-superadmin"
+                            element={<PatientsSuperadmin />}
+                          />
+                          <Route
+                            path="infodesk-superadmin"
+                            element={<InfodeskSuperadmin />}
+                          />
+                          <Route
+                            path="philhealth-superadmin"
+                            element={<PhilhealthSuperadmin />}
+                          />
                           <Route
                             path="healthcare-provider"
                             element={<HealthcareProvider />}
+                          />
+
+                          <Route
+                            path="clinics-superadmin"
+                            element={<ClinicsSuperadmin />}
+                          />
+                          <Route
+                            path="hospitals-superadmin"
+                            element={<HospitalsSuperadmin />}
                           />
                         </>
                       )}
@@ -121,7 +154,7 @@ const App = () => {
                         </>
                       )}
 
-                      {/* Settings accessible to all roles */}
+                      {/* Settings accessible to all */}
                       <Route path="settings" element={<Settings />} />
 
                       <Route

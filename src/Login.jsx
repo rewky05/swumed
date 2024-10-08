@@ -87,7 +87,7 @@ const Login = () => {
         console.log("Existing user data updated.");
       }
   
-      setCurrentUser({ ...user, role, userType }); // Correct context usage
+      setCurrentUser({ ...user, role, userType }); 
   
       if (role === "Information Desk Staff") {
         navigate("/infodesk-dashboard");
@@ -129,9 +129,8 @@ const Login = () => {
               Login
             </h2>
 
-            {error && <p className="text-red-500 text-center pb-2">{error}</p>}
+            {error && <p className="text-red-600 text-center pb-2">{error}</p>}
 
-            {/* Login Form */}
             <form onSubmit={handleSubmit}>
               <div>
                 <label
@@ -142,7 +141,7 @@ const Login = () => {
                 </label>
                 <input
                   id="email"
-                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md outline-none"
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -160,7 +159,7 @@ const Login = () => {
                 </label>
                 <input
                   id="password"
-                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md"
+                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md outline-none"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -182,14 +181,13 @@ const Login = () => {
               <div className="mt-6 flex justify-center">
                 <button
                   type="submit"
-                  className="w-fit py-3 bg-[#8E0B16] hover:bg-red-700 text-white rounded-3xl px-6"
+                  className="w-fit py-3 bg-[#8E0B16] text-white rounded-3xl px-6"
                 >
                   Login
                 </button>
               </div>
             </form>
 
-            {/* Forgot Password Section */}
             {forgotPassword && (
               <div className="mt-4">
                 <p className="text-center">

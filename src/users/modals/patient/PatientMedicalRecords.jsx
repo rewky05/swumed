@@ -28,7 +28,7 @@ const PatientMedicalRecords = ({ medicalRecords }) => {
               </button>
             </div>
             {isOpen && (
-              <div className="record-details mt-2 h-[200px] overflow-y-hidden overflow-y-scroll">
+              <div className="record-details mt-2 h-[200px] overflow-y-scroll">
                 {record.status && <p><strong>Status:</strong> {record.status}</p>}
                 {record.healthcareProvider?.assignedDoctor && <p><strong>Doctor:</strong> {record.healthcareProvider.assignedDoctor}</p>}
                 {record.date && <p><strong>Date:</strong> {record.date}</p>}
