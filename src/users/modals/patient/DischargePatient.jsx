@@ -127,7 +127,7 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
               handleDischarge(patient.id, selectedRecordId);
               onConfirm(patient.id, selectedRecordId);
             }}
-            className="bg-red-500 text-white py-2 px-4 rounded"
+            className="bg-primary_maroon text-white py-2 px-4 rounded"
           >
             Confirm Discharge
           </button>

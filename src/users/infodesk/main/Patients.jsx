@@ -125,13 +125,16 @@ const Patients = () => {
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold p-1">Patients</h2>
-        <button
-          onClick={() => setShowCreatePatientModal(true)}
-          className="main-button"
-        >
-          <IoMdAdd size={20} /> <span className="ml-1">Add Patient</span>
-        </button>
+        <h2 className="text-xl font-semibold p-1">Patients</h2>
+        {user.role !== "Philhealth Staff" && (
+          <button
+            onClick={() => setShowCreatePatientModal(true)}
+            className="main-button"
+          >
+            <IoMdAdd size={20} />{" "}
+            <span className="ml-1 text-sm">Add Patient</span>
+          </button>
+        )}
       </div>
 
       <input
@@ -139,10 +142,10 @@ const Patients = () => {
         placeholder="Search Patients"
         value={searchTerm}
         onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
+        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4 text-sm"
       />
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto text-sm">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b">
@@ -178,11 +181,16 @@ const Patients = () => {
                     <td className="p-2">{doctorName || "To be assigned"}</td>
                     <td className="p-2">
                       <span
-                        className={`${
-                          medicalRecord?.status === "Active"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        } font-semibold`}
+                        className={`font-semibold ${
+                          medicalRecord?.status.toLowerCase() === "active" &&
+                          "text-green-500"
+                        } ${
+                          medicalRecord?.status.toLowerCase() ===
+                            "to be discharged" && "text-yellow-500"
+                        } ${
+                          medicalRecord?.status.toLowerCase() ===
+                            "discharged" && "text-red-500"
+                        } `}
                       >
                         {medicalRecord?.status || "N/A"}
                       </span>
@@ -190,42 +198,47 @@ const Patients = () => {
                     <td className="p-2 text-center">
                       <button
                         onClick={() => handleViewPatientDetails(patient)}
-                        className={`action-button ${
-                          doctorName === "To be assigned"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
+                        className={`action-button`}
+                        // disabled={doctorName === "To be assigned"}
                       >
                         View
                       </button>
-                      <button
-                        onClick={() =>
-                          handleDischargePatient(patient, recordId)
-                        }
-                        className={`action-button ${
-                          doctorName === "To be assigned" ||
-                          medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
-                        // disabled={!isEditable}
-                      >
-                        Discharge
-                      </button>
-                      <button
-                        className={`action-button ${
-                          doctorName === "To be assigned" ||
-                          medicalRecord?.status === "Discharged"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
-                        onClick={() => handleClinicalSummary(patient, recordId)}
-                      >
-                        +Summary
-                      </button>
+                      {user.role !== "Philhealth Staff" && (
+                        <>
+                          <button
+                            onClick={() =>
+                              handleDischargePatient(patient, recordId)
+                            }
+                            className={`action-button ${
+                              doctorName === "To be assigned" ||
+                              (medicalRecord?.status.toLowerCase() === "discharged" &&
+                                "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon")
+                            } ${
+                              medicalRecord?.status.toLowerCase() ===
+                                "active" &&
+                              "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
+                            }`}
+                            disabled={doctorName === "To be assigned"}
+                            // disabled={!isEditable}
+                          >
+                            Discharge
+                          </button>
+                          <button
+                            className={`action-button ${
+                              doctorName === "To be assigned" ||
+                              medicalRecord?.status === "Discharged"
+                                ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
+                                : ""
+                            }`}
+                            disabled={doctorName === "To be assigned"}
+                            onClick={() =>
+                              handleClinicalSummary(patient, recordId)
+                            }
+                          >
+                            +Summary
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 );

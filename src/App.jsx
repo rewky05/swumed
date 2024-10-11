@@ -16,7 +16,6 @@ import Settings from "./users/Settings";
 
 import DashboardSuperadmin from "./users/superadmin/Dashboard";
 import DashboardInfodesk from "./users/infodesk/Dashboard";
-import DashboardPhilhealth from "./users/philhealth/Dashboard";
 
 import Accounts from "./users/superadmin/accounts/Accounts";
 import DoctorsSuperadmin from "./users/superadmin/view-accounts/Doctors";
@@ -24,8 +23,8 @@ import PatientsSuperadmin from "./users/superadmin/view-accounts/Patients";
 import InfodeskSuperadmin from "./users/superadmin/view-accounts/Infodesk";
 import PhilhealthSuperadmin from "./users/superadmin/view-accounts/Philhealth";
 import HealthcareProvider from "./users/superadmin/accounts/HealthcareProvider";
-import ClinicsSuperadmin from "./users/superadmin/view-providers/Clinics";
-import HospitalsSuperadmin from "./users/superadmin/view-providers/Hospitals";
+import FacilityList from "./users/superadmin/view-providers/FacilityList";
+// import HospitalsSuperadmin from "./users/superadmin/view-providers/Hospitals";
 
 import { UserProvider } from "./users/context/UserContext";
 import { PatientProvider } from "./users/context/PatientContext";
@@ -120,11 +119,21 @@ const App = () => {
 
                           <Route
                             path="clinics-superadmin"
-                            element={<ClinicsSuperadmin />}
+                            element={
+                              <FacilityList
+                                facilityType="clinics"
+                                title="Clinics"
+                              />
+                            }
                           />
                           <Route
                             path="hospitals-superadmin"
-                            element={<HospitalsSuperadmin />}
+                            element={
+                              <FacilityList
+                                facilityType="hospitals"
+                                title="Hospitals"
+                              />
+                            }
                           />
                         </>
                       )}
@@ -149,8 +158,9 @@ const App = () => {
                         <>
                           <Route
                             path="philhealth-dashboard"
-                            element={<DashboardPhilhealth />}
+                            element={<Patients />}
                           />
+                          <Route path="patients" element={<Patients />} />
                         </>
                       )}
 

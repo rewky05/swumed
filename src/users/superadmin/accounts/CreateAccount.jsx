@@ -174,15 +174,18 @@ const CreateAccount = () => {
           name,
           imageUrl: imageFile,
           consultationDays,
+          date: new Date().toLocaleDateString("en-PH"),
         };
       } else {
         dataToSave = {
           account: { email: user.email },
+          emailVerified: false,
           hospital_id: providerType === "hospital" ? providerId : null,
           clinic_id: providerType === "clinic" ? providerId : null,
           branch_id: branch,
           name,
           role,
+          date: new Date().toLocaleDateString("en-PH"),
         };
       }
 
@@ -236,7 +239,7 @@ const CreateAccount = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
             {role === "patient" && (
               <>
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label>Name</label>
                   <input
                     type="text"
@@ -251,14 +254,14 @@ const CreateAccount = () => {
                 <div className="flex flex-col">
                   <label>Email</label>
                   <input
-                    type="email"
+                    type="email"  
                     placeholder="Enter email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="border rounded-md p-2"
                   />
-                </div>
+                </div> */}
 
                 <div className="flex flex-col">
                   <label>Address</label>
@@ -379,30 +382,6 @@ const CreateAccount = () => {
             {role === "Doctor" && (
               <>
                 <div className="flex flex-col">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-
-                <div className="flex flex-col">
                   <label>Specialty</label>
                   <input
                     type="text"
@@ -437,7 +416,7 @@ const CreateAccount = () => {
               </>
             )}
 
-            {(role === "Information Desk Staff" ||
+            {/* {(role === "Information Desk Staff" ||
               role === "Philhealth Staff") && (
               <>
                 <div className="flex flex-col">
@@ -463,58 +442,34 @@ const CreateAccount = () => {
                     className="border rounded-md p-2"
                   />
                 </div>
-
-                <div className="flex flex-col">
-                  <label>Provider Type</label>
-                  <select
-                    value={providerType}
-                    onChange={(e) => setProviderType(e.target.value)}
-                    className="border rounded-md p-2"
-                    required
-                  >
-                    <option value="">Select Provider Type</option>
-                    <option value="hospital">Hospital</option>
-                    <option value="clinic">Clinic</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Provider</label>
-                  <select
-                    value={providerId}
-                    onChange={(e) => setProviderId(e.target.value)}
-                    className="border rounded-md p-2"
-                    required
-                  >
-                    <option value="">Select Provider</option>
-                    {providers.map(([id, data]) => (
-                      <option key={id} value={id}>
-                        {data.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Branch</label>
-                  <select
-                    value={branch}
-                    onChange={(e) => setBranch(e.target.value)}
-                    className="border rounded-md p-2"
-                    required
-                  >
-                    <option value="">Select Branch</option>
-                    {branches.map(([id, name]) => (
-                      <option key={id} value={id}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </>
-            )}
+            )} */}
 
             {/* Common Fields */}
+            <div className="flex flex-col">
+              <label>Name</label>
+              <input
+                type="text"
+                placeholder="Enter name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="border rounded-md p-2"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label>Email</label>
+              <input
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="border rounded-md p-2"
+              />
+            </div>
+
             <div className="flex flex-col">
               <label>Password</label>
               <input

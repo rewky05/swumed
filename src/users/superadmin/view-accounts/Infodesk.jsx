@@ -8,36 +8,30 @@ const InfodeskStaff = () => {
   const fetchHospitalAndBranchNames = async (hospitalId, clinicId, branchId) => {
     const db = getDatabase();
   
-    // Determine the branch reference based on whether the ID is for a hospital or clinic
     const branchRef = hospitalId
       ? ref(db, `hospitals/${hospitalId}/branch/${branchId}/name`)
       : clinicId
-      ? ref(db, `clinics/${clinicId}/branch/${branchId}/name`) // Assuming clinics also have branches
-      : null; // Handle case where neither ID is present
+      ? ref(db, `clinics/${clinicId}/branch/${branchId}/name`)
+      : null; 
   
     let namePromise;
   
     if (clinicId) {
-      // Fetch the clinic name if clinicId is present
       namePromise = ref(db, `clinics/${clinicId}/name`);
     } else if (hospitalId) {
-      // Fetch the hospital name if hospitalId is present
       namePromise = ref(db, `hospitals/${hospitalId}/name`);
     } else {
-      // Handle the case where neither ID is present
       namePromise = Promise.resolve("Unknown");
     }
   
-    // Fetch the branch name if branchRef exists
     const branchNamePromise = branchRef
       ? new Promise((resolve) => {
           onValue(branchRef, (snapshot) => {
             resolve(snapshot.val());
           });
         })
-      : Promise.resolve("Unknown"); // Default value if no branch reference
+      : Promise.resolve("Unknown"); 
   
-    // Fetch both names concurrently
     const [nameSnapshot, branchName] = await Promise.all([
       namePromise
         ? new Promise((resolve) => onValue(namePromise, (snapshot) => resolve(snapshot.val())))

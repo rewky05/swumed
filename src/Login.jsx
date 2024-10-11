@@ -28,6 +28,7 @@ const Login = () => {
       if (!user.emailVerified) {
         setError("Please verify your email before logging in.");
         await sendVerificationEmail(user);
+        await auth.signOut();
         return;
       }
   

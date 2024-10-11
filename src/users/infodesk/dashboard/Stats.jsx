@@ -67,9 +67,9 @@ const Stats = () => {
           if (branchData) {
             const doctorsCount = branchData.doctors ? Object.keys(branchData.doctors).length : 0;
             setTotalDoctors(doctorsCount);
-            setDoctorsData([doctorsCount, 10 - doctorsCount]);
+            setDoctorsData([doctorsCount, 6 - doctorsCount]);
 
-            const admissions = [4, 1, 1, 1, 6];
+            const admissions = [1];
             Object.entries(branchData.patients || {}).forEach(([patientId]) => {
               const patientRef = ref(db, `patients/${patientId}/medicalRecords`);
               onValue(patientRef, (recordSnapshot) => {
@@ -85,7 +85,7 @@ const Stats = () => {
             });
 
             setRecentAdmissions(admissions.length);
-            setAdmissionsData(admissions.map((_, i) => (i + 1) * 10)); 
+            setAdmissionsData(admissions.map((_, i) => (i + 1) * 1)); 
           }
         });
       }
@@ -100,16 +100,16 @@ const Stats = () => {
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-4">Overview Statistics</h2>
+      <h2 className="text-xl font-semibold mb-4">Overview Statistics</h2>
       <div className="flex justify-between items-center w-full gap-8">
         
         {/* Total Patients */}
-        <div className="shadow-lg p-4 rounded-lg bg-white w-full flex items-center h-40">
-          <div className="w-1/2">
-            <h3 className="text-lg font-semibold mb-2">Total Patients</h3>
+        <div className="shadow-md p-4 rounded-lg bg-white w-full flex items-center h-36">
+          <div className="pr-12">
+            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">Total Patients</h3>
             <div className="text-3xl font-bold">{totalPatients}</div>
           </div>
-          <div className="w-1/2 h-full flex justify-center items-center">
+          <div className="w-[35%] h-full flex justify-center items-center">
             <Pie
               data={{
                 labels: ["Active", "Inactive"],
@@ -140,15 +140,15 @@ const Stats = () => {
         </div>
 
         {/* Total Doctors */}
-        <div className="shadow-lg p-4 rounded-lg bg-white w-full flex items-center h-40">
-          <div className="w-1/2">
-            <h3 className="text-lg font-semibold mb-2">Total Doctors</h3>
+        <div className="shadow-md p-4 rounded-lg bg-white w-full flex items-center h-36">
+          <div className="pr-12">
+            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">Total Doctors</h3>
             <div className="text-3xl font-bold">{totalDoctors}</div>
           </div>
-          <div className="w-1/2 h-full flex justify-center items-center">
+          <div className="w-[35%] h-full flex justify-center items-center">
             <Line
               data={{
-                labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+                labels: ["Sept", "Oct", "Nov"],
                 datasets: [
                   {
                     label: "Doctors",
@@ -178,15 +178,15 @@ const Stats = () => {
         </div>
 
         {/* Recent Admissions */}
-        <div className="shadow-lg p-4 rounded-lg bg-white w-full flex items-center h-40">
-          <div className="w-1/2">
-            <h3 className="text-lg font-semibold mb-2">Recent Admissions</h3>
+        <div className="shadow-md p-4 rounded-lg bg-white w-full flex items-center h-36">
+          <div className="pr-12">
+            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">Recent Admissions</h3>
             <div className="text-3xl font-bold">{recentAdmissions}</div>
           </div>
-          <div className="w-1/2 h-full flex justify-center items-center">
+          <div className="w-[35%] h-full flex justify-center items-center">
             <Bar
               data={{
-                labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+                labels: ["Oct", "Nov"],
                 datasets: [
                   {
                     label: "Admissions",

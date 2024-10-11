@@ -31,7 +31,7 @@ const Settings = () => {
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 w-fit">
         <div className="flex items-center p-4 pl-8">
           <MdPerson className="text-lightgray" size={22} />
-          <span className="ml-2 text-xl font-semibold">Personal Details</span>
+          <span className="ml-2 text-lg font-semibold">Personal Details</span>
         </div>
         <div className="flex justify-center items-center p-6">
           <div className="rounded-full bg-primary_maroon text-white p-6">

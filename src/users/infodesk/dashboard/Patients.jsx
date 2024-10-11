@@ -125,18 +125,19 @@ const Patients = () => {
   // };
 
   return (
-    <div className="p-8">
+    <div className="p-8 pt-4">
       <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold p-1">Patient Search</h2>
+        <h2 className="text-xl font-semibold p-1">Patient Search</h2>
         <button
           className="main-button"
           onClick={() => setShowCreatePatientModal(true)}
         >
-          <IoMdAdd size={20} /> <span className="ml-1">Add Patient</span>
+          <IoMdAdd size={20} />{" "}
+          <span className="ml-1 text-sm">Add Patient</span>
         </button>
         <Link to="/patients">
           <button className="main-button">
-            <FaEye size={20} /> <span className="ml-2">View All</span>
+            <FaEye size={20} /> <span className="ml-2 text-sm">View All</span>
           </button>
         </Link>
       </div>
@@ -146,11 +147,11 @@ const Patients = () => {
         placeholder="Search Patients"
         value={searchTerm}
         onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
+        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4 text-sm"
       />
 
       <div className="overflow-x-auto overflow-y-auto rounded-lg">
-        <table className="w-full text-left border text-[#171A1F]">
+        <table className="w-full text-left border text-[#171A1F] text-sm">
           <thead className="">
             <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
               <th className="p-4">Philhealth #</th>
@@ -187,11 +188,15 @@ const Patients = () => {
                     <td className="p-3">{doctorName || "To be assigned"}</td>
                     <td className="p-3">
                       <span
-                        className={`${
-                          medicalRecord?.status === "Active"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        } font-semibold`}
+                        className={`font-semibold ${
+                          medicalRecord?.status.toLowerCase() === "active" && "text-green-500"
+                        } ${
+                          medicalRecord?.status.toLowerCase() === "to be discharged" &&
+                          "text-yellow-500"
+                        } ${
+                          medicalRecord?.status.toLowerCase() === "discharged" &&
+                          "text-red-500"
+                        } `}
                       >
                         {medicalRecord?.status || "N/A"}
                       </span>
@@ -199,12 +204,8 @@ const Patients = () => {
                     <td className="p-3 text-center">
                       <button
                         onClick={() => handleViewPatientDetails(patient)}
-                        className={`action-button ${
-                          doctorName === "To be assigned"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
-                            : ""
-                        }`}
-                        disabled={doctorName === "To be assigned"}
+                        className="action-button"
+                        // disabled={doctorName === "To be assigned"}
                       >
                         View
                       </button>

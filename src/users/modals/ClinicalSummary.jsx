@@ -8,6 +8,8 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
   const [selectedRecordId, setSelectedRecordId] = useState(null);
   const [clinicalSummary, setClinicalSummary] = useState("");
 
+
+  console.log(user)
   const handleSummaryChange = (e) => {
     setClinicalSummary(e.target.value);
   };
@@ -22,6 +24,7 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
 
       onValue(medicalRecordsRef, (snapshot) => {
         const data = snapshot.val();
+        console.log(data)
         if (data) {
           const recordsList = Object.keys(data).map((key) => ({
             id: key,
@@ -30,18 +33,20 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
 
           const filteredRecords = recordsList.filter((record) => {
             const hasClinicalSummary = record.details.clinicalSummary;
+            const status = record.status
+            const final = status.toLowerCase()
             if (user.hospital_id) {
               return (
                 record.healthcareProvider.hospital_id === user.hospital_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                record.status === "Active" && !hasClinicalSummary
+                final === "to be discharged" && !hasClinicalSummary
               );
             }
             if (user.clinic_id) {
               return (
                 record.healthcareProvider.clinic_id === user.clinic_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                record.status === "Active" && !hasClinicalSummary
+                final === "to be discharged" && !hasClinicalSummary
               );
             }
             return false;

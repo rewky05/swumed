@@ -31,7 +31,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../backend/firebase"; // Ensure auth is initialized correctly
+import { auth } from "../../backend/firebase"; 
 
 const AuthContext = createContext();
 

@@ -54,9 +54,9 @@ const Doctors = () => {
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold p-1">Doctors</h2>
+        <h2 className="text-xl font-semibold p-1">Doctors</h2>
         <button className="main-button" onClick={handleAddDoctor}>
-          <IoMdAdd size={20} /> <span className="ml-1">Add Doctor</span>
+          <IoMdAdd size={20} /> <span className="ml-1 text-sm">Add Doctor</span>
         </button>
       </div>
 
@@ -65,7 +65,7 @@ const Doctors = () => {
         placeholder="Search Doctors"
         value={searchTerm}
         onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
+        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4 text-sm"
       />
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -76,13 +76,13 @@ const Doctors = () => {
           >
             <div className="flex flex-col justify-between">
               <div className="p-4">
-                <h1 className="text-xl py-2">{doctor.name}</h1>
-                <h2 className="text-lightgray">{doctor.specialty}</h2>
-                <h2 className="text-lightgray">
+                <h1 className="text-lg py-2">{doctor.name}</h1>
+                <h2 className="text-lightgray text-sm">{doctor.specialty}</h2>
+                <h2 className="text-lightgray text-sm">
                   Available for consultations {doctor.consultationDays}
                 </h2>
               </div>
-              <div className="p-4">
+              <div className="p-4 text-sm">
                 <button
                   className="action-button"
                   onClick={() => handleDoctorClick(doctor)}
