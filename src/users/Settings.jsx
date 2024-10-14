@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { MdPerson } from "react-icons/md";
-import { useAuthContext } from "./context/AuthContext"; 
-import { useUserContext } from "./context/UserContext";  
+import { useAuthContext } from "./context/AuthContext";
+import { useUserContext } from "./context/UserContext";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 const Settings = () => {
-  const { currentUser } = useAuthContext(); 
-  const { user: userDetails } = useUserContext(); 
+  const { currentUser } = useAuthContext();
+  const { user: userDetails } = useUserContext();
   const [verifEmail, setVerifEmail] = useState("");
   const [error, setError] = useState("");
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -27,42 +27,39 @@ const Settings = () => {
   if (!userDetails) return <p>Loading...</p>;
 
   return (
-    <div className="p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 w-fit">
-        <div className="flex items-center p-4 pl-8">
+    <div className="p-8 mx-auto justify-center items-center place-content-center my-6">
+      <div className="max-w-xl bg-white rounded-lg shadow-md p-6 w-fit">
+        <div className="flex items-center p-4">
           <MdPerson className="text-lightgray" size={22} />
           <span className="ml-2 text-lg font-semibold">Personal Details</span>
         </div>
-        <div className="flex justify-center items-center p-6">
+        <div className="flex flex-col justify-center items-center p-3">
           <div className="rounded-full bg-primary_maroon text-white p-6">
-            <MdPerson size={100} className="" />
+            <MdPerson size={90} className="" />
+          </div>
+          <div className="pt-5 text-xl font-semibold">
+            {userDetails.role.toUpperCase()}
           </div>
         </div>
         {error && <p className="text-red-500 text-center p-2">{error}</p>}
-        <div>
-          <div className="flex justify-between">
-            <div className="flex flex-col p-4 px-20 pr-36">
+        <div className="flex m-4 mx-12 gap-x-6">
+          <div className="">
+            <div className="flex flex-col p-4">
               <h2 className="text-lightgray">Full Name</h2>
-              <h2>{userDetails.name || "N/A"}</h2>
+              <h2>{ userDetails.firstName + " " + userDetails.lastName || "N/A"}</h2>
             </div>
-            <div className="flex flex-col p-4 px-20">
+            <div className="flex flex-col p-4">
               <h2 className="text-lightgray">Phone Number</h2>
-              <h2>{userDetails.number || "N/A"}</h2>
+              <h2>{userDetails.contactNumber || "N/A"}</h2>
             </div>
           </div>
-
-          <div className="flex flex-col p-4 px-20 pr-36">
+          <div className="flex flex-col p-4">
             <h2 className="text-lightgray">Email</h2>
             <h2 className="">{currentUser?.email || "N/A"}</h2>
           </div>
-
-          <div className="flex flex-col p-4 px-20 pr-36">
-            <h2 className="text-lightgray">Role</h2>
-            <h2 className="">{userDetails.role || "N/A"}</h2>
-          </div>
         </div>
 
-        <div className="flex justify-end pt-2 pr-8">
+        <div className="flex justify-end pt-2 ">
           <button
             onClick={() => setForgotPassword(true)}
             className="main-button"
@@ -72,7 +69,7 @@ const Settings = () => {
         </div>
 
         {forgotPassword && (
-          <div className="mt-4 px-20">
+          <div className="mt-6 px-20">
             <p className="text-center">
               Enter your email to receive a reset link:
             </p>
@@ -87,10 +84,7 @@ const Settings = () => {
               />
             </div>
             <div className="mt-4 flex justify-center">
-              <button
-                onClick={handleForgotPassword}
-                className="w-fit py-3 bg-blue-500 hover:bg-blue-700 text-white rounded-3xl px-6"
-              >
+              <button onClick={handleForgotPassword} className="main-button">
                 Send Reset Link
               </button>
             </div>

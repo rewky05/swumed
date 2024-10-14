@@ -115,8 +115,8 @@ const Dashboard = () => {
     user.role === "superadmin" && (
       <div className="p-8">
         <h2 className="text-2xl font-semibold mb-4">Overview Statistics</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="shadow-lg p-4 rounded-lg bg-white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 place-content-center place-items-center">
+          <div className="shadow-md p-4 rounded-lg bg-white w-[590px]">
             <h3 className="text-lg font-semibold mb-4">Hospitals vs Clinics</h3>
             <Bar
             className=""
@@ -141,17 +141,17 @@ const Dashboard = () => {
                 scales: {
                   y: {
                     beginAtZero: true,
-                    grid: {
-                      color: "rgba(102, 24, 30, 1)" 
-                    }
+                    // grid: {
+                    //   color: "rgba(102, 24, 30, 1)" 
+                    // }
                   },
                 },
                 plugins: {
                   legend: {
                     display: false,
-                    grid: {
-                      color: "rgba(102, 24, 30, 1)" 
-                    }
+                    // grid: {
+                    //   color: "rgba(102, 24, 30, 1)" 
+                    // }
                   },
                 },
               }}
@@ -160,23 +160,23 @@ const Dashboard = () => {
 
           <div className="flex gap-4">
             <div className="flex flex-col gap-4 h-fit">
-              <div className="shadow-lg p-4 rounded-lg bg-highlight_pink text-primary_maroon text-center">
+              <div className="shadow-md p-4 rounded-lg bg- text-primary_maroon text-center">
                 <h3 className="text-lg font-semibold mb-2">Total Patients</h3>
                 <div className="text-7xl font-bold">{totalPatients}</div>
               </div>
 
-              <div className="shadow-lg p-4 rounded-lg bg-highlight_pink text-primary_maroon text-center">
+              <div className="shadow-md p-4 rounded-lg bg- text-primary_maroon text-center">
                 <h3 className="text-lg font-semibold mb-2">Total Doctors</h3>
                 <div className="text-7xl font-bold">{totalDoctors}</div>
               </div>
             </div>
 
             <div className="w-full flex items-center">
-              <div className="shadow-lg p-4 pt-8 rounded-lg bg-highlight_pink text-primary_maroon text-center">
+              <div className="shadow-md p-4 pt-8 rounded-lg bg- text-primary_maroon text-center">
                 <h3 className="text-lg font-semibold mb-2">Total Staff</h3>
                 <div className="text-7xl font-bold">{totalStaff}</div>
                 <div className="flex justify-center gap-4 items-center p-4">
-                  <div className="p-4 rounded-lg bg-highlight_pink text-primary_maroon text-center">
+                  <div className="p-4 rounded-lg bg- text-primary_maroon text-center">
                     <h3 className="font-semibold mb-2">
                       Information Desk Staff
                     </h3>
@@ -184,7 +184,7 @@ const Dashboard = () => {
                       {infoDeskStaffCount}
                     </div>
                   </div>
-                  <div className="p-4 rounded-lg bg-highlight_pink text-primary_maroon text-center">
+                  <div className="p-4 rounded-lg bg- text-primary_maroon text-center">
                     <h3 className="font-semibold mb-2">
                       PhilHealth Staff
                     </h3>

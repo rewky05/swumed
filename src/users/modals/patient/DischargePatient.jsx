@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue, update } from "firebase/database";
 import { useUserContext } from "../../context/UserContext";
 
+import { TiArrowSortedDown } from "react-icons/ti";
+
 const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
   const { user } = useUserContext();
   const [medicalRecords, setMedicalRecords] = useState([]);
@@ -24,18 +26,22 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
           }));
 
           const filteredRecords = recordsList.filter((record) => {
+            const hasClinicalSummary = record.details.clinicalSummary;
+
             if (user.hospital_id) {
               return (
                 record.healthcareProvider.hospital_id === user.hospital_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                record.status === "Active"
+                record.status.toLowerCase() === "to be discharged" &&
+                hasClinicalSummary
               );
             }
             if (user.clinic_id) {
               return (
                 record.healthcareProvider.clinic_id === user.clinic_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                record.status === "Active"
+                record.status.toLowerCase() === "to be discharged" &&
+                hasClinicalSummary
               );
             }
             return false;
@@ -94,32 +100,37 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
       <div className="bg-white rounded-md shadow-lg p-6 max-w-md w-full">
         <h2 className="text-lg font-semibold mb-4">Discharge Patient</h2>
 
-        <p className="mb-2">Patient Name: {patient.generalData?.name}</p>
+        <p className="mb-2">
+          Patient Name:{" "}
+          {patient.generalData?.firstName + " " + patient.generalData?.lastName}
+        </p>
         <p className="mb-4">
           Philhealth Number: {patient.generalData?.philhealthNumber}
         </p>
 
         <h3 className="font-semibold mb-2">Select Medical Record:</h3>
-        <select
-          className="border border-gray-300 rounded-md p-2 w-full mb-4"
-          onChange={(e) => setSelectedRecordId(e.target.value)}
-          value={selectedRecordId || ""}
-        >
-          <option value="" disabled>
-            Select a medical record
-          </option>
-          {medicalRecords.map((record) => (
-            <option key={record.id} value={record.id}>
-              {record.id} - Status: {record.status}
+        <div className="relative flex justify-end mb-6">
+          <select
+            className="border rounded-md p-2 cursor-pointer select-none w-full outline-none"
+            onChange={(e) => setSelectedRecordId(e.target.value)}
+            value={selectedRecordId || ""}
+          >
+            <option value="" disabled>
+              Select a medical record
             </option>
-          ))}
-        </select>
+            {medicalRecords.map((record) => (
+              <option key={record.id} value={record.id}>
+                {record.id} - Status: {record.status}
+              </option>
+            ))}
+          </select>
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+            <TiArrowSortedDown size={20} className="text-primary_maroon" />
+          </span>
+        </div>
 
         <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 rounded-md py-2 px-4 mr-2"
-          >
+          <button onClick={onClose} className="cancel-button">
             Cancel
           </button>
           <button
@@ -127,7 +138,7 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
               handleDischarge(patient.id, selectedRecordId);
               onConfirm(patient.id, selectedRecordId);
             }}
-            className="bg-primary_maroon text-white py-2 px-4 rounded"
+            className="main-button"
           >
             Confirm Discharge
           </button>

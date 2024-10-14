@@ -15,6 +15,7 @@ import { storage } from "../../../backend/firebase";
 
 import { useUserContext } from "../../context/UserContext";
 import { useAuthContext } from "../../context/AuthContext";
+import { IoMdCloudUpload } from "react-icons/io";
 
 const CreateDoctor = ({ onClose }) => {
   const { user } = useUserContext();
@@ -24,9 +25,11 @@ const CreateDoctor = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [fileName, setFileName] = useState("No file selected");
 
   const [doctorData, setDoctorData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     specialty: "",
     consultationDays: "",
     imageUrl: imageFile,
@@ -40,6 +43,22 @@ const CreateDoctor = ({ onClose }) => {
       const url = await getDownloadURL(storageRfrnc);
       setImageFile(url);
     }
+  };
+
+  const handleFileName = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+    } else {
+      setFileName("No file selected");
+    }
+  };
+
+  console.log(fileName);
+
+  const handleFileChange = (e) => {
+    handleImageUpload(e);
+    handleFileName(e);
   };
 
   const handleSubmit = async () => {
@@ -56,11 +75,11 @@ const CreateDoctor = ({ onClose }) => {
       await createUserWithEmailAndPassword(secondaryAuth, email, password);
 
       const doctorId = secondaryAuth.currentUser.uid;
-      const today = new Date().toLocaleDateString("en-US");
+      const today = new Date().toLocaleDateString("en-PH");
 
       const newDoctor = {
         account: {
-          email,
+          email: secondaryAuth.currentUser.email,
         },
         consultationDays: doctorData.consultationDays,
         date: today,
@@ -71,7 +90,8 @@ const CreateDoctor = ({ onClose }) => {
           providerType: clinic_id ? "clinic" : "hospital",
         },
         imageUrl: imageFile,
-        name: doctorData.name,
+        firstName: doctorData.firstName,
+        lastName: doctorData.lastName,
         specialty: doctorData.specialty,
       };
 
@@ -94,91 +114,105 @@ const CreateDoctor = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="modal-content bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+    <div className="fixed inset-0 top-20 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg p-6 shadow-md w-[700px]">
         <h2 className="text-2xl font-bold text-primary_maroon mb-4">
           Add Doctor
         </h2>
 
-        <input
-          type="text"
-          placeholder="Doctor's Name"
-          value={doctorData.name}
-          onChange={(e) =>
-            setDoctorData({ ...doctorData, name: e.target.value })
-          }
-          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
-        />
+        <div className="space-y-6">
+          <div className="grid gap-x-6 gap-y-4">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <input
+                type="text"
+                placeholder="First Name"
+                value={doctorData.firstName}
+                onChange={(e) =>
+                  setDoctorData({ ...doctorData, firstName: e.target.value })
+                }
+                className="border rounded-md p-2"
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={doctorData.lastName}
+                onChange={(e) =>
+                  setDoctorData({ ...doctorData, lastName: e.target.value })
+                }
+                className="border rounded-md p-2"
+              />
+            </div>
 
-        <input
-          type="text"
-          placeholder="Specialty"
-          value={doctorData.specialty}
-          onChange={(e) =>
-            setDoctorData({ ...doctorData, specialty: e.target.value })
-          }
-          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
-        />
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border rounded-md p-2"
+              />
 
-        <input
-          type="text"
-          placeholder="Consultation Days"
-          value={doctorData.consultationDays}
-          onChange={(e) =>
-            setDoctorData({ ...doctorData, consultationDays: e.target.value })
-          }
-          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
-        />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="border rounded-md p-2"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <input
+                type="text"
+                placeholder="Specialty"
+                value={doctorData.specialty}
+                onChange={(e) =>
+                  setDoctorData({ ...doctorData, specialty: e.target.value })
+                }
+                className="border rounded-md p-2"
+              />
 
-        {/* <input
-          type="text"
-          placeholder="Image URL"
-          value={doctorData.imageUrl}
-          onChange={(e) =>
-            setDoctorData({ ...doctorData, imageUrl: e.target.value })
-          }
-          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
-        /> */}
-
-        <div className="flex flex-col">
-          <label>Profile Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="border rounded-md p-2"
-          />
-        </div>
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="input-field mb-3 p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-highlight_pink"
-        />
-
-        <div className="flex justify-between">
-          <button
-            onClick={handleSubmit}
-            className="submit-btn bg-primary_maroon text-white py-2 px-4 rounded hover:bg-highlight_pink transition duration-200"
-          >
-            Add Doctor
-          </button>
-          <button
-            onClick={onClose}
-            className="cancel-btn bg-gray-300 text-black py-2 px-4 rounded hover:bg-gray-400 transition duration-200"
-          >
-            Cancel
-          </button>
+              <input
+                type="text"
+                placeholder="Consultation Days"
+                value={doctorData.consultationDays}
+                onChange={(e) =>
+                  setDoctorData({
+                    ...doctorData,
+                    consultationDays: e.target.value,
+                  })
+                }
+                className="border rounded-md p-2"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <div className="flex flex-col">
+                <label>Profile Picture</label>
+                <div className="flex items-center p-2">
+                  <input
+                    type="file"
+                    accept=".jpg, .jpeg, .png"
+                    id="fileInput"
+                    onChange={handleFileChange}
+                    className="appearance-none hidden px-14"
+                  />
+                  <label className="" htmlFor="fileInput">
+                    <i className="py-2 text-3xl cursor-pointer">
+                      <IoMdCloudUpload />
+                    </i>
+                  </label>
+                  <span className="px-2">{fileName}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button onClick={onClose} className="cancel-button">
+                Cancel
+              </button>
+              <button onClick={handleSubmit} className="main-button">
+                Add Doctor
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -18,6 +18,8 @@ const Login = () => {
   const [forgotPassword, setForgotPassword] = useState(false);
   const navigate = useNavigate();
 
+  // auth.signOut();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -142,7 +144,7 @@ const Login = () => {
                 </label>
                 <input
                   id="email"
-                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md outline-none"
+                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md"
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -160,7 +162,7 @@ const Login = () => {
                 </label>
                 <input
                   id="password"
-                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md outline-none"
+                  className="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-md"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -182,7 +184,7 @@ const Login = () => {
               <div className="mt-6 flex justify-center">
                 <button
                   type="submit"
-                  className="w-fit py-3 bg-[#8E0B16] text-white rounded-3xl px-6"
+                  className="w-fit py-3 bg-primary_maroon hover:bg-light_maroon text-white rounded-3xl px-6"
                 >
                   Login
                 </button>
@@ -213,7 +215,7 @@ const Login = () => {
                 <div className="mt-4 flex justify-center">
                   <button
                     onClick={handleForgotPassword}
-                    className="w-fit py-3 bg-blue-500 hover:bg-blue-700 text-white rounded-3xl px-6"
+                    className="main-button"
                   >
                     Send Reset Link
                   </button>

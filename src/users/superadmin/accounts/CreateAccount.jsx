@@ -8,18 +8,21 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { storage } from "../../../backend/firebase";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 import { TiArrowSortedDown } from "react-icons/ti";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"; // Import Firebase Auth functions
+import { IoMdCloudUpload } from "react-icons/io";
 
 const CreateAccount = () => {
-  const [role, setRole] = useState("patient");
+  const [role, setRole] = useState("Information Desk Staff");
   const [branch, setBranch] = useState("Select Branch");
   const [branches, setBranches] = useState([]);
   const [specialty, setSpecialty] = useState("");
   const [providerType, setProviderType] = useState("");
   const [providers, setProviders] = useState([]);
   const [providerId, setProviderId] = useState("");
-  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [philhealthNumber, setPhilhealthNumber] = useState("");
@@ -33,18 +36,43 @@ const CreateAccount = () => {
   const [nationality, setNationality] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [consultationDays, setConsultationDays] = useState("");
+  const [fileName, setFileName] = useState("No file selected");
   const { signIn, signOutUser } = useAuthContext();
   const navigate = useNavigate();
 
   const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
   const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
 
+  const handleBirthdateChange = (e) => {
+    const selectedDate = e.target.value;
+    setBirthdate(selectedDate);
+    calculateAge(selectedDate);
+  };
+
+  const calculateAge = (birthdate) => {
+    const birthDateObj = new Date(birthdate);
+    const currentDate = new Date();
+
+    let age = currentDate.getFullYear() - birthDateObj.getFullYear();
+    const monthDifference = currentDate.getMonth() - birthDateObj.getMonth();
+
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && currentDate.getDate() < birthDateObj.getDate())
+    ) {
+      age--;
+    }
+
+    setAge(age);
+  };
+
   useEffect(() => {
     setBranch("Select Branch");
     setSpecialty("");
     setProviderType("");
     setProviderId("");
-    setName("");
+    setFirstName("");
+    setLastName("");
     setEmail("");
     setPassword("");
     setPhilhealthNumber("");
@@ -60,6 +88,17 @@ const CreateAccount = () => {
     setConsultationDays("");
   }, [role]);
 
+  const handleFileName = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+    } else {
+      setFileName("No file selected");
+    }
+  };
+
+  console.log(fileName);
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -68,6 +107,11 @@ const CreateAccount = () => {
       const url = await getDownloadURL(storageRfrnc);
       setImageFile(url);
     }
+  };
+
+  const handleFileChange = (e) => {
+    handleImageUpload(e);
+    handleFileName(e);
   };
 
   useEffect(() => {
@@ -135,7 +179,8 @@ const CreateAccount = () => {
           account: { email: user.email },
           generalData: {
             philhealthNumber,
-            name,
+            firstName,
+            lastName,
             address,
             age,
             gender,
@@ -171,7 +216,8 @@ const CreateAccount = () => {
             branch_id: branch,
           },
           specialty,
-          name,
+          firstName,
+          lastName,
           imageUrl: imageFile,
           consultationDays,
           date: new Date().toLocaleDateString("en-PH"),
@@ -183,8 +229,10 @@ const CreateAccount = () => {
           hospital_id: providerType === "hospital" ? providerId : null,
           clinic_id: providerType === "clinic" ? providerId : null,
           branch_id: branch,
-          name,
+          firstName,
+          lastName,
           role,
+          contactNumber,
           date: new Date().toLocaleDateString("en-PH"),
         };
       }
@@ -215,66 +263,125 @@ const CreateAccount = () => {
   };
 
   return (
-    <div className="p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <div className="relative flex justify-end mb-6">
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="appearance-none bg-primary_maroon rounded-md text-white py-2 px-5 pr-7 flex items-center"
-          >
-            <option value="Information Desk Staff">
-              Information Desk Staff
-            </option>
-            <option value="Philhealth Staff">Philhealth Staff</option>
-            <option value="Doctor">Doctor</option>
-            <option value="patient">Patient</option>
-          </select>
-          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-            <TiArrowSortedDown size={20} className="text-white" />
-          </span>
-        </div>
-
+    <div className="p-8 w-[1200px] mx-auto justify-center items-center place-content-center my-8">
+      <div className="relative flex justify-end mb-6">
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="appearance-none bg-primary_maroon rounded-md text-white py-2 px-5 pr-9 select-none flex items-center cursor-pointer outline-none"
+        >
+          <option value="Information Desk Staff">InfoDesk Staff</option>
+          <option value="Philhealth Staff">Philhealth Staff</option>
+          <option value="Doctor">Doctor</option>
+          <option value="patient">Patient</option>
+        </select>
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+          <TiArrowSortedDown size={20} className="text-white" />
+        </span>
+      </div>
+      <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-            {role === "patient" && (
-              <>
-                {/* <div className="flex flex-col">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
+          <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+            <div className="flex flex-col">
+              <label>Facility Type</label>
+              <div className="relative justify-end">
+                <select
+                  value={providerType}
+                  onChange={(e) => setProviderType(e.target.value)}
+                  className="border rounded-md p-2 cursor-pointer select-none w-full outline-none"
+                  required
+                >
+                  <option value="">Select Facility Type</option>
+                  <option value="hospital">Hospital</option>
+                  <option value="clinic">Clinic</option>
+                </select>
+                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                  <TiArrowSortedDown
+                    size={20}
+                    className="text-primary_maroon"
                   />
-                </div>
+                </span>
+              </div>
+            </div>
 
-                <div className="flex flex-col">
-                  <label>Email</label>
-                  <input
-                    type="email"  
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
+            <div className="flex flex-col">
+              <label>Facility</label>
+              <div className="relative justify-end">
+                <select
+                  value={providerId}
+                  onChange={(e) => setProviderId(e.target.value)}
+                  className="border rounded-md p-2 cursor-pointer w-full outline-none"
+                  required
+                >
+                  <option value="">Select Facility</option>
+                  {providers.map(([id, provider]) => (
+                    <option key={id} value={id}>
+                      {provider.name}
+                    </option>
+                  ))}
+                </select>
+                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                  <TiArrowSortedDown
+                    size={20}
+                    className="text-primary_maroon"
                   />
-                </div> */}
+                </span>
+              </div>
+            </div>
 
-                <div className="flex flex-col">
-                  <label>Address</label>
-                  <input
-                    type="text"
-                    placeholder="Enter address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
+            <div className="flex flex-col">
+              <label>Branch</label>
+              <div className="relative justify-end">
+                <select
+                  value={branch}
+                  onChange={(e) => setBranch(e.target.value)}
+                  className="border rounded-md p-2 cursor-pointer w-full outline-none"
+                  required
+                >
+                  <option value="">Select Branch</option>
+                  {branches.map(([id, branchData]) => (
+                    <option key={id} value={id}>
+                      {branchData.name}
+                    </option>
+                  ))}
+                </select>
+                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                  <TiArrowSortedDown
+                    size={20}
+                    className="text-primary_maroon"
                   />
-                </div>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="grid gap-x-6 gap-y-4">
+            {/* Common Fields */}
+            <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+              <div className="flex flex-col">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter first name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  className="border rounded-md p-2"
+                />
+              </div>
 
+              <div className="flex flex-col">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  className="border rounded-md p-2"
+                />
+              </div>
+
+              {role !== "patient" && role !== "Doctor" && (
                 <div className="flex flex-col">
                   <label>Contact Number</label>
                   <input
@@ -286,7 +393,9 @@ const CreateAccount = () => {
                     className="border rounded-md p-2"
                   />
                 </div>
+              )}
 
+              {role === "patient" && (
                 <div className="flex flex-col">
                   <label>Philhealth Number</label>
                   <input
@@ -298,89 +407,9 @@ const CreateAccount = () => {
                     className="border rounded-md p-2"
                   />
                 </div>
+              )}
 
-                <div className="flex flex-col">
-                  <label>Age</label>
-                  <input
-                    type="number"
-                    placeholder="Enter age"
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Gender</label>
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  >
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Birthdate</label>
-                  <input
-                    type="date"
-                    value={birthdate}
-                    onChange={(e) => setBirthdate(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Birthplace</label>
-                  <input
-                    type="text"
-                    placeholder="Enter birthplace"
-                    value={birthplace}
-                    onChange={(e) => setBirthplace(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Marital Status</label>
-                  <select
-                    value={maritalStatus}
-                    onChange={(e) => setMaritalStatus(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  >
-                    <option value="">Select Marital Status</option>
-                    <option value="Single">Single</option>
-                    <option value="Married">Married</option>
-                    <option value="Divorced">Divorced</option>
-                    <option value="Widowed">Widowed</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Nationality</label>
-                  <input
-                    type="text"
-                    placeholder="Enter nationality"
-                    value={nationality}
-                    onChange={(e) => setNationality(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-              </>
-            )}
-
-            {role === "Doctor" && (
-              <>
+              {role === "Doctor" && (
                 <div className="flex flex-col">
                   <label>Specialty</label>
                   <input
@@ -392,7 +421,165 @@ const CreateAccount = () => {
                     required
                   />
                 </div>
+              )}
+            </div>
 
+            <div
+              className={`grid ${
+                role === "patient" ? "grid-cols-3" : "grid-cols-2"
+              } gap-x-6 gap-y-4`}
+            >
+              <div className="flex flex-col">
+                <label>Email</label>
+                <input
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="border rounded-md p-2"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label>Password</label>
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="border rounded-md p-2"
+                />
+              </div>
+              {role === "patient" && (
+                <div className="flex flex-col">
+                  <label>Contact Number</label>
+                  <input
+                    type="tel"
+                    placeholder="Enter contact number"
+                    value={contactNumber}
+                    onChange={(e) => setContactNumber(e.target.value)}
+                    required
+                    className="border rounded-md p-2"
+                  />
+                </div>
+              )}
+            </div>
+
+            {role === "patient" && (
+              <>
+                <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+                  <div className="flex flex-col">
+                    <label>Gender</label>
+                    <div className="relative justify-end">
+                      <select
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                        required
+                        className="border rounded-md p-2 cursor-pointer select-none w-full outline-none"
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                      <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                        <TiArrowSortedDown
+                          size={20}
+                          className="text-primary_maroon"
+                        />
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label>Birthdate</label>
+                    <input
+                      type="date"
+                      value={birthdate}
+                      onChange={handleBirthdateChange}
+                      required
+                      className="border rounded-md p-2"
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label>Age</label>
+                    <input
+                      type="number"
+                      placeholder="Age"
+                      value={age}
+                      readOnly
+                      className="border rounded-md p-2 cursor-default outline-none"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                  <div className="flex flex-col">
+                    <label>Address</label>
+                    <input
+                      type="text"
+                      placeholder="Enter address"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      required
+                      className="border rounded-md p-2"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Birthplace</label>
+                    <input
+                      type="text"
+                      placeholder="Enter birthplace"
+                      value={birthplace}
+                      onChange={(e) => setBirthplace(e.target.value)}
+                      required
+                      className="border rounded-md p-2"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                  <div className="flex flex-col">
+                    <label>Marital Status</label>
+                    <div className="relative justify-end">
+                      <select
+                        value={maritalStatus}
+                        onChange={(e) => setMaritalStatus(e.target.value)}
+                        required
+                        className="border rounded-md p-2 cursor-pointer select-none w-full outline-none"
+                      >
+                        <option value="">Select Marital Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widowed">Widowed</option>
+                      </select>
+                      <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                        <TiArrowSortedDown
+                          size={20}
+                          className="text-primary_maroon"
+                        />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <label>Nationality</label>
+                    <input
+                      type="text"
+                      placeholder="Enter nationality"
+                      value={nationality}
+                      onChange={(e) => setNationality(e.target.value)}
+                      required
+                      className="border rounded-md p-2"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {role === "Doctor" && (
+              <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                 <div className="flex flex-col">
                   <label>Consultation Days</label>
                   <input
@@ -405,138 +592,34 @@ const CreateAccount = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label>Profile Image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="border rounded-md p-2"
-                  />
+                  <label>Profile Picture</label>
+                  <div className="flex items-center p-2">
+                    <input
+                      type="file"
+                      accept=".jpg, .jpeg, .png"
+                      id="fileInput"
+                      onChange={handleFileChange}
+                      className="appearance-none hidden px-4"
+                    />
+                    <label className="" htmlFor="fileInput">
+                      <i className="py-2 text-3xl cursor-pointer">
+                        <IoMdCloudUpload />
+                      </i>
+                    </label>
+                    <span className="px-2">{fileName}</span>
+                  </div>
                 </div>
-              </>
+              </div>
             )}
-
-            {/* {(role === "Information Desk Staff" ||
-              role === "Philhealth Staff") && (
-              <>
-                <div className="flex flex-col">
-                  <label>Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="border rounded-md p-2"
-                  />
-                </div>
-              </>
-            )} */}
-
-            {/* Common Fields */}
-            <div className="flex flex-col">
-              <label>Name</label>
-              <input
-                type="text"
-                placeholder="Enter name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="border rounded-md p-2"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label>Email</label>
-              <input
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="border rounded-md p-2"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label>Password</label>
-              <input
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="border rounded-md p-2"
-              />
-            </div>
           </div>
-
-          <div className="flex flex-col">
-            <label>Provider Type</label>
-            <select
-              value={providerType}
-              onChange={(e) => setProviderType(e.target.value)}
-              className="border rounded-md p-2"
-              required
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="main-button"
             >
-              <option value="">Select Provider Type</option>
-              <option value="hospital">Hospital</option>
-              <option value="clinic">Clinic</option>
-            </select>
+              Save
+            </button>
           </div>
-
-          <div className="flex flex-col">
-            <label>Provider</label>
-            <select
-              value={providerId}
-              onChange={(e) => setProviderId(e.target.value)}
-              className="border rounded-md p-2"
-              required
-            >
-              <option value="">Select Provider</option>
-              {providers.map(([id, provider]) => (
-                <option key={id} value={id}>
-                  {provider.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label>Branch</label>
-            <select
-              value={branch}
-              onChange={(e) => setBranch(e.target.value)}
-              className="border rounded-md p-2"
-              required
-            >
-              <option value="">Select Branch</option>
-              {branches.map(([id, branchData]) => (
-                <option key={id} value={id}>
-                  {branchData.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="bg-primary_maroon text-white py-2 px-4 rounded-md"
-          >
-            Submit
-          </button>
         </form>
       </div>
     </div>

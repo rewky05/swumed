@@ -43,7 +43,7 @@ const Patients = () => {
       if (doctorsData) {
         const doctorMap = {};
         Object.keys(doctorsData).forEach((key) => {
-          doctorMap[key] = doctorsData[key].name;
+          doctorMap[key] = doctorsData[key].firstName + " " + doctorsData[key].lastName;
         });
         setDoctorNames(doctorMap);
       }
@@ -51,15 +51,9 @@ const Patients = () => {
   };
 
   const filteredPatients = medicalRecords
-    //   .filter((record) =>
-    //     Object.values(record.medicalRecords || {}).some(
-    //       (mr) =>
-    //         mr.healthcareProvider?.hospital_id === user.hospital_id &&
-    //         mr.healthcareProvider?.branch_id === user.branch_id
-    //     )
-    //   )
     .filter((patient) => {
-      const patientName = patient.generalData?.name?.toLowerCase() || "";
+      const patientFirstName = patient.generalData?.firstName?.toLowerCase() || "";
+      const patientLastName = patient.generalData?.lastName?.toLowerCase() || "";
       const philhealthNumber = patient.generalData?.philhealthNumber || "";
 
       const medicalRecord =
@@ -75,7 +69,8 @@ const Patients = () => {
       const searchLower = searchTerm.toLowerCase();
 
       return (
-        patientName.includes(searchLower) ||
+        patientFirstName.includes(searchLower) ||
+        patientLastName.includes(searchLower) ||
         philhealthNumber.includes(searchLower) ||
         date.includes(searchLower) ||
         doctorName.includes(searchLower) ||
@@ -95,7 +90,7 @@ const Patients = () => {
   return (
     <div className="p-8">
       <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold p-1">Patients</h2>
+        <h2 className="text-xl font-semibold p-1">Patients</h2>
       </div>
 
       <input
@@ -103,22 +98,22 @@ const Patients = () => {
         placeholder="Search Patients"
         value={searchTerm}
         onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4"
+        className="border border-gray-300 rounded-md p-2 w-[32.9%] mb-4 text-sm"
       />
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto overflow-y-auto border rounded-xl overflow-hidden">
+        <table className="w-full text-left text-[#171A1F] text-sm">
           <thead>
-            <tr className="border-b">
-              <th className="p-2">Philhealth #</th>
-              <th className="p-2">Patient Name</th>
-              <th className="p-2">Date</th>
-              <th className="p-2">Doctor Assigned</th>
-              <th className="p-2">Status</th>
-              <th className="p-2 text-center">Actions</th>
+            <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
+              <th className="p-4">Philhealth #</th>
+              <th className="p-4">Patient Name</th>
+              <th className="p-4">Date</th>
+              <th className="p-4">Doctor Assigned</th>
+              <th className="p-4">Status</th>
+              <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white">
             {filteredPatients.length > 0 ? (
               filteredPatients.map((patient) => {
                 const patientId = patient.id;
@@ -132,28 +127,33 @@ const Patients = () => {
                   doctorNames[assignedDoctor] || "To be assigned";
 
                 return (
-                  <tr key={patientId} className="border-b">
-                    <td>{patient.generalData?.philhealthNumber || "N/A"}</td>
-                    <td className="p-2">
-                      {patient.generalData?.name || "N/A"}
+                  <tr key={patientId} className="">
+                    <td className="p-3 pl-4">{patient.generalData?.philhealthNumber || "N/A"}</td>
+                    <td className="p-3">
+                      {patient.generalData?.firstName + " " + patient.generalData?.lastName || "N/A"}
                     </td>
-                    <td className="p-2">{medicalRecord?.date || "N/A"}</td>
-                    <td className="p-2">{doctorName || "To be assigned"}</td>
-                    <td className="p-2">
-                      <span
-                        className={`${
-                          medicalRecord?.status === "active"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
+                    <td className="p-3">{medicalRecord?.date || "N/A"}</td>
+                    <td className="p-3">{doctorName || "To be assigned"}</td>
+                    <td className="p-3">
+                    <span
+                        className={`font-semibold ${
+                          medicalRecord?.status.toLowerCase() === "active" &&
+                          "text-green-500"
+                        } ${
+                          medicalRecord?.status.toLowerCase() ===
+                            "to be discharged" && "text-yellow-500"
+                        } ${
+                          medicalRecord?.status.toLowerCase() ===
+                            "discharged" && "text-red-500"
+                        } `}
                       >
                         {medicalRecord?.status || "N/A"}
                       </span>
                     </td>
-                    <td className="p-2 text-center">
+                    <td className="p-3 text-center flex justify-center items-center">
                       <button
                         onClick={() => handleViewPatientDetails(patient)}
-                        className="text-blue-500 underline"
+                        className="action-button"
                       >
                         View
                       </button>

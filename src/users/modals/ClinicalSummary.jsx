@@ -2,16 +2,25 @@ import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue, update } from "firebase/database";
 import { useUserContext } from "../context/UserContext";
 
+import { TiArrowSortedDown } from "react-icons/ti";
+
 const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
   const { user } = useUserContext();
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [selectedRecordId, setSelectedRecordId] = useState(null);
   const [clinicalSummary, setClinicalSummary] = useState("");
+  const [error, setError] = useState("");
 
+  console.log(user);
 
-  console.log(user)
+  const handleRecordChange = (e) => {
+    setSelectedRecordId(e.target.value);
+    if (error) setError("");
+  }
+
   const handleSummaryChange = (e) => {
     setClinicalSummary(e.target.value);
+    if (error) setError("");
   };
 
   useEffect(() => {
@@ -24,7 +33,7 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
 
       onValue(medicalRecordsRef, (snapshot) => {
         const data = snapshot.val();
-        console.log(data)
+        console.log(data);
         if (data) {
           const recordsList = Object.keys(data).map((key) => ({
             id: key,
@@ -33,20 +42,22 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
 
           const filteredRecords = recordsList.filter((record) => {
             const hasClinicalSummary = record.details.clinicalSummary;
-            const status = record.status
-            const final = status.toLowerCase()
+            const status = record.status;
+            const final = status.toLowerCase();
             if (user.hospital_id) {
               return (
                 record.healthcareProvider.hospital_id === user.hospital_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                final === "to be discharged" && !hasClinicalSummary
+                final === "to be discharged" &&
+                !hasClinicalSummary
               );
             }
             if (user.clinic_id) {
               return (
                 record.healthcareProvider.clinic_id === user.clinic_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                final === "to be discharged" && !hasClinicalSummary
+                final === "to be discharged" &&
+                !hasClinicalSummary
               );
             }
             return false;
@@ -64,25 +75,28 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
       (record) => record.id === selectedRecordId
     );
 
+    setError("")
+
+    // const providerId =
+    //   medicalRecord.healthcareProvider.hospital_id ||
+    //   medicalRecord.healthcareProvider.clinic_id;
+
     if (!medicalRecord) {
-      console.error("Medical record not found.");
+      setError("Please select a medical record first.");
       return;
-    }
-
-    const providerId =
-      medicalRecord.healthcareProvider.hospital_id ||
-      medicalRecord.healthcareProvider.clinic_id;
-
-    if (!providerId) {
-      console.error(
-        "Provider ID (either hospital_id or clinic_id) is missing for the medical record."
+    } else if (!patient || !recordId || !patientId) {
+      console.error("Patient or recordId is missing.");
+      return;
+    } else if (
+      clinicalSummary === null ||
+      clinicalSummary === undefined ||
+      clinicalSummary === "undefined" ||
+      clinicalSummary === ""
+    ) {
+      setError(
+        `Please input the clinical summary for ${recordId}.`
       );
       return;
-    }
-
-    if (!patient || !recordId || !patientId) {
-      console.error("Patient or recordId is missing.");
-      return null;
     }
 
     const db = getDatabase();
@@ -93,48 +107,60 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
     updates[recordPath] = {
       summary: clinicalSummary,
       date: new Date().toLocaleDateString(),
-      addedBy: user.name,
+      addedBy: user.firstName + " " + user.lastName,
+      addedByUID: user.uid,
     };
 
     try {
       await update(ref(db), updates);
+      onConfirm(patient.id, selectedRecordId);
       console.log("Added clinical summary successfully");
     } catch (error) {
-      console.error("Error adding clinical summary", error);
+      setError("Error adding clinical summary", error);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-md shadow-lg p-6 max-w-md w-full">
+      <div className="bg-white rounded-md shadow-lg p-6 w-[600px]">
         <h2 className="text-lg font-semibold mb-4">Add Clinical Summary</h2>
 
-        <h3 className="font-semibold mb-2">Select Medical Record:</h3>
-        <select
-          className="border border-gray-300 rounded-md p-2 w-full mb-4"
-          onChange={(e) => setSelectedRecordId(e.target.value)}
-          value={selectedRecordId || ""}
-        >
-          <option value="" disabled>
-            Select a medical record
-          </option>
-          {medicalRecords.map((record) => (
-            <option key={record.id} value={record.id}>
-              {record.id} - Status: {record.status}
-            </option>
-          ))}
-        </select>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        <p className="mb-2">Patient Name: {patient.generalData?.name}</p>
-        <p className="mb-4">
+        <h3 className="font-semibold mb-1">Select Medical Record:</h3>
+        <div className="relative flex justify-end mb-4">
+          <select
+            className="border rounded-md p-2 cursor-pointer select-none w-full outline-none"
+            onChange={handleRecordChange}
+            value={selectedRecordId || ""}
+          >
+            <option value="" disabled>
+              Select a medical record
+            </option>
+            {medicalRecords.map((record) => (
+              <option key={record.id} value={record.id}>
+                {record.id} - Status: {record.status}
+              </option>
+            ))}
+          </select>
+          <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+            <TiArrowSortedDown size={20} className="text-primary_maroon" />
+          </span>
+        </div>
+        {/* <div className="relative justify-end"></div> */}
+        <p className="p-[6px]">
+          Patient Name:{" "}
+          {patient.generalData?.firstName + " " + patient.generalData?.lastName}
+        </p>
+        <p className="p-[6px]">
           Philhealth Number: {patient.generalData?.philhealthNumber}
         </p>
-        <p className="mb-2">Date of Birth: {patient.generalData?.birthdate}</p>
-        <p className="mb-2">
+        <p className="p-[6px]">Date of Birth: {patient.generalData?.birthdate}</p>
+        <p className="p-[6px]">
           Chief Complaint:{" "}
           {patient.medicalRecords?.[selectedRecordId]?.details?.chiefComplaint}
         </p>
-        <p className="mb-2">
+        <p className="p-[6px]">
           History of Present Illness:{" "}
           {
             patient.medicalRecords?.[selectedRecordId]?.details
@@ -142,8 +168,8 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
           }
         </p>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
+        <div className="p-[6px]">
+          <label className="block font-semibold mb-1">
             Clinical Summary:
           </label>
           <textarea
@@ -155,18 +181,14 @@ const ClinicalSummary = ({ patient, recordId, onConfirm, onClose }) => {
         </div>
 
         <div className="flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 rounded-md py-2 px-4 mr-2"
-          >
+          <button onClick={onClose} className="cancel-button">
             Cancel
           </button>
           <button
             onClick={() => {
               handleAddClinicalSummary(patient.id, selectedRecordId);
-              onConfirm(patient.id, selectedRecordId);
             }}
-            className="bg-primary_maroon text-white py-2 px-4 rounded"
+            className="main-button"
           >
             Add
           </button>

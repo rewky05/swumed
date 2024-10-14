@@ -56,8 +56,8 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/superadmin-dashboard"
-                      ? "bg-red-100 text-primary_maroon font-semibold"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                      ? "sidebar-active"
+                      : "sidebar-inactive"
                   }`}
                 >
                   <FaThLarge className="mr-3" />
@@ -71,8 +71,8 @@ const Sidebar = () => {
                   onClick={toggleAccountsSection}
                   className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
                     isAccountsOpen
-                      ? "bg-red-100 text-primary_maroon font-semibold"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                      ? "sidebar-active"
+                      : "sidebar-inactive"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -90,8 +90,8 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/accounts"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
                         Create Account
@@ -102,8 +102,8 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/doctors-superadmin"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
                         Doctors
@@ -114,8 +114,8 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/patients-superadmin"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
                         Patients
@@ -126,8 +126,8 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/infodesk-superadmin"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
                         Information Desk Staff
@@ -138,8 +138,8 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/philhealth-superadmin"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
                         Philhealth Staff
@@ -155,12 +155,12 @@ const Sidebar = () => {
                   onClick={toggleProvidersSection}
                   className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
                     isProvidersOpen
-                      ? "bg-red-100 text-primary_maroon font-semibold"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                      ? "sidebar-active"
+                      : "sidebar-inactive"
                   }`}
                 >
                   <FaHospital className="mr-3" />
-                  Healthcare Providers
+                  Healthcare Facilities
                   {isProvidersOpen ? (
                     <FaChevronDown className="ml-auto" />
                   ) : (
@@ -174,11 +174,11 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/healthcare-provider"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
-                        Add Providers
+                        Add Facility
                       </li>
                     </Link>
 
@@ -186,8 +186,8 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/hospitals-superadmin"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
                         Hospitals
@@ -198,8 +198,8 @@ const Sidebar = () => {
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/clinics-superadmin"
-                            ? "bg-red-100 text-primary_maroon font-semibold"
-                            : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
                         }`}
                       >
                         Clinics
@@ -219,8 +219,8 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/infodesk-dashboard"
-                      ? "bg-red-100 text-primary_maroon font-semibold"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                      ? "sidebar-active"
+                      : "sidebar-inactive"
                   }`}
                 >
                   <FaThLarge className="mr-3" />
@@ -232,8 +232,8 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/patients"
-                      ? "bg-red-100 text-primary_maroon font-semibold"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                      ? "sidebar-active"
+                      : "sidebar-inactive"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -245,8 +245,8 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/doctors"
-                      ? "bg-red-100 text-primary_maroon font-semibold"
-                      : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                      ? "sidebar-active"
+                      : "sidebar-inactive"
                   }`}
                 >
                   <FaUserMd className="mr-3" />
@@ -262,8 +262,8 @@ const Sidebar = () => {
               <li
                 className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                   activeItem === "/philhealth-dashboard"
-                    ? "bg-red-100 text-primary_maroon font-semibold"
-                    : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                    ? "sidebar-active"
+                    : "sidebar-inactive"
                 }`}
               >
                 <FaThLarge className="mr-3" />
@@ -276,8 +276,8 @@ const Sidebar = () => {
             <li
               className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                 activeItem === "/settings"
-                  ? "bg-red-100 text-primary_maroon font-semibold"
-                  : "text-gray-600 hover:bg-gray-100 transition-all hover:scale-105 hover:font-semibold"
+                  ? "sidebar-active"
+                  : "sidebar-inactive"
               }`}
             >
               <FaCogs className="mr-3" />
@@ -290,7 +290,7 @@ const Sidebar = () => {
       <div className="flex justify-center p-8">
         <button
           onClick={handleLogout}
-          className="rounded-md text-white py-[7px] px-8 flex items-center bg-primary_maroon hover:shadow-lg hover:scale-105"
+          className="rounded-md text-white py-[7px] px-8 flex items-center bg-primary_maroon hover:bg-light_maroon hover:transition-all duration-200"
         >
           <BiLogOut className="mr-2" />
           Logout

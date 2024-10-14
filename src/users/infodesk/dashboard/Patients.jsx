@@ -55,7 +55,8 @@ const Patients = () => {
       if (doctorsData) {
         const doctorMap = {};
         Object.keys(doctorsData).forEach((key) => {
-          doctorMap[key] = doctorsData[key].name;
+          doctorMap[key] =
+            doctorsData[key].firstName + " " + doctorsData[key].lastName;
         });
         setDoctorNames(doctorMap);
       }
@@ -80,7 +81,10 @@ const Patients = () => {
       )
     )
     .filter((patient) => {
-      const patientName = patient.generalData?.name?.toLowerCase() || "";
+      const patientFirstName =
+        patient.generalData?.firstName?.toLowerCase() || "";
+      const patientLastName =
+        patient.generalData?.lastName?.toLowerCase() || "";
       const philhealthNumber = patient.generalData?.philhealthNumber || "";
 
       const medicalRecord =
@@ -96,7 +100,8 @@ const Patients = () => {
       const searchLower = searchTerm.toLowerCase();
 
       return (
-        patientName.includes(searchLower) ||
+        patientFirstName.includes(searchLower) ||
+        patientLastName.includes(searchLower) ||
         philhealthNumber.includes(searchLower) ||
         date.includes(searchLower) ||
         doctorName.includes(searchLower) ||
@@ -147,11 +152,11 @@ const Patients = () => {
         placeholder="Search Patients"
         value={searchTerm}
         onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4 text-sm"
+        className="border border-gray-300 rounded-md p-2 w-[32.9%] mb-4 text-sm"
       />
 
-      <div className="overflow-x-auto overflow-y-auto rounded-lg">
-        <table className="w-full text-left border text-[#171A1F] text-sm">
+      <div className="overflow-x-auto overflow-y-auto border rounded-xl shadow-md">
+        <table className="w-full text-left text-[#171A1F] text-sm">
           <thead className="">
             <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
               <th className="p-4">Philhealth #</th>
@@ -162,7 +167,7 @@ const Patients = () => {
               <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white">
             {filteredPatients.length > 0 ? (
               filteredPatients.map((patient) => {
                 const patientId = patient.id;
@@ -174,28 +179,34 @@ const Patients = () => {
                   medicalRecord?.healthcareProvider?.assignedDoctor;
                 const doctorName =
                   doctorNames[assignedDoctor] || "To be assigned";
+                const hasClinicalSummary =
+                  medicalRecord.details.clinicalSummary;
+
                 // const isEditable = isEditableRecord(patient);
 
                 return (
                   <tr key={patientId} className="">
-                    <td className="p-3">
+                    <td className="p-3 pl-4">
                       {patient.generalData?.philhealthNumber || "N/A"}
                     </td>
                     <td className="p-3">
-                      {patient.generalData?.name || "N/A"}
+                      {patient.generalData?.firstName +
+                        " " +
+                        patient.generalData?.lastName || "N/A"}
                     </td>
                     <td className="p-3">{medicalRecord?.date || "N/A"}</td>
                     <td className="p-3">{doctorName || "To be assigned"}</td>
                     <td className="p-3">
                       <span
                         className={`font-semibold ${
-                          medicalRecord?.status.toLowerCase() === "active" && "text-green-500"
+                          medicalRecord?.status.toLowerCase() === "active" &&
+                          "text-green-500"
                         } ${
-                          medicalRecord?.status.toLowerCase() === "to be discharged" &&
-                          "text-yellow-500"
+                          medicalRecord?.status.toLowerCase() ===
+                            "to be discharged" && "text-yellow-500"
                         } ${
-                          medicalRecord?.status.toLowerCase() === "discharged" &&
-                          "text-red-500"
+                          medicalRecord?.status.toLowerCase() ===
+                            "discharged" && "text-red-500"
                         } `}
                       >
                         {medicalRecord?.status || "N/A"}
@@ -212,7 +223,8 @@ const Patients = () => {
                       <button
                         className={`action-button ${
                           doctorName === "To be assigned" ||
-                          medicalRecord?.status === "Discharged"
+                          medicalRecord?.status === "Discharged" ||
+                          medicalRecord?.status.toLowerCase() === "active" || hasClinicalSummary
                             ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                             : ""
                         }`}
@@ -227,7 +239,9 @@ const Patients = () => {
                         }
                         className={`action-button ${
                           doctorName === "To be assigned" ||
-                          medicalRecord?.status === "Discharged"
+                          medicalRecord?.status.toLowerCase() ===
+                            "discharged" ||
+                          medicalRecord?.status.toLowerCase() === "active" || !hasClinicalSummary
                             ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                             : ""
                         }`}

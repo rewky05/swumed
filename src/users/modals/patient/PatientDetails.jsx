@@ -4,10 +4,10 @@ const PatientDetails = ({ patient, onClose }) => {
   const { generalData, account, medicalRecords } = patient || {};
 
   return (
-    <div className="fixed inset-0 top-20 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="fixed inset-0 top-20 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-lg w-[40rem] h-[36rem] overflow-y-auto px-6 py-4 pt-6">
         <h2 className="text-2xl font-bold text-primary_maroon">
-          {generalData?.name || "Unknown"}
+          {generalData?.firstName + " " + generalData?.lastName || "Unknown"}
         </h2>
 
         <div className="overflow-y-auto p-2">
@@ -36,10 +36,10 @@ const PatientDetails = ({ patient, onClose }) => {
           <PatientMedicalRecords medicalRecords={medicalRecords} />
         </div>
 
-        <div className="flex">
+        <div className="flex mt-4">
           <button
             onClick={onClose}
-            className="my-2 bg-primary_maroon text-white py-2 px-4 rounded hover:bg-highlight_pink hover:text-primary_maroon transition duration-200"
+            className="main-button"
           >
             Close
           </button>

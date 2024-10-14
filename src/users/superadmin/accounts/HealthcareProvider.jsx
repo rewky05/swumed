@@ -2,17 +2,30 @@ import { useState } from "react";
 import { getDatabase, ref, push, set } from "firebase/database";
 // import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../../context/UserContext"; 
+import { useUserContext } from "../../context/UserContext";
+
+import { FaRegTrashAlt } from "react-icons/fa";
+import { BiAddToQueue } from "react-icons/bi";
 
 const HealthcareProvider = () => {
-  const { user } = useUserContext() 
+  const { user } = useUserContext();
   const [providerType, setProviderType] = useState("clinics");
   const [name, setName] = useState("");
   const [branches, setBranches] = useState([{ id: 1, name: "", address: "" }]);
   const navigate = useNavigate();
 
-  const handleAddBranch = () => {
-    setBranches([...branches, { id: branches.length + 1, name: "", address: "" }]);
+  const handleAddBranch = (index) => {
+    const newBranch = { id: branches.length + 1, name: "", address: "" };
+    const updatedBranches = [...branches];
+    updatedBranches.splice(index + 1, 0, newBranch);
+    setBranches(updatedBranches);
+  };
+
+  const handleLessBranch = (index) => {
+    if (branches.length > 1) {
+      const updatedBranches = branches.filter((_, i) => i !== index);
+      setBranches(updatedBranches);
+    }
   };
 
   const handleBranchChange = (index, field, value) => {
@@ -55,84 +68,103 @@ const HealthcareProvider = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-8 mt-8 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-semibold mb-6 text-center">Register Healthcare Provider</h1>
+    <div className="p-8 w-[1150px] bg-white mx-auto justify-center items-center place-content-center my-8 rounded-lg shadow-md mt-14">
+      <h1 className="text-2xl font-semibold mb-6 text-center">
+        Register Healthcare Facility
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <fieldset className="border p-4 rounded-md">
-          <legend className="font-medium">Provider Type</legend>
-          <div className="flex items-center">
-            <label className="flex items-center mr-4">
-              <input
-                type="radio"
-                value="clinics"
-                checked={providerType === "clinics"}
-                onChange={() => setProviderType("clinics")}
-                className="mr-2"
-              />
-              Clinic
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="hospitals"
-                checked={providerType === "hospitals"}
-                onChange={() => setProviderType("hospitals")}
-                className="mr-2"
-              />
-              Hospital
-            </label>
-          </div>
-        </fieldset>
-
-        <div>
-          <label className="block font-medium">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter provider name"
-            className="border p-2 w-full rounded-md"
-            required
-          />
+        <div className="grid grid-cols-2 gap-x-8">
+          <fieldset className="border p-4 rounded-md max-h-[90px]">
+            <legend className="font-medium">Facility Type</legend>
+            <div className="flex items-center max-h-[90px]">
+              <label className="flex items-center mr-4">
+                <input
+                  type="radio"
+                  value="clinics"
+                  checked={providerType === "clinics"}
+                  onChange={() => setProviderType("clinics")}
+                  className="mr-2 accent-primary_maroon"
+                />
+                Clinic
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="hospitals"
+                  checked={providerType === "hospitals"}
+                  onChange={() => setProviderType("hospitals")}
+                  className="mr-2 accent-primary_maroon"
+                />
+                Hospital
+              </label>
+            </div>
+          </fieldset>
+          <fieldset className="border p-4 rounded-md max-h-[90px] flex items-center ">
+            <legend className="font-medium">Name</legend>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter facility name"
+              className="p-2 w-full rounded-md outline-none max-h-[90px]"
+              required
+            />
+          </fieldset>
         </div>
 
         <div>
-          <label className="block font-medium">Branches</label>
+          <div className="flex justify-between items-center py-2">
+            <label className="block font-medium">Branches</label>
+          </div>
           {branches.map((branch, index) => (
             <div key={branch.id} className="mb-4 border p-4 rounded-md">
-              <input
-                type="text"
-                value={branch.name}
-                onChange={(e) => handleBranchChange(index, "name", e.target.value)}
-                placeholder={`Branch ${index + 1} Name`}
-                className="border p-2 w-full mb-2 rounded-md"
-                required
-              />
-              <input
-                type="text"
-                value={branch.address}
-                onChange={(e) => handleBranchChange(index, "address", e.target.value)}
-                placeholder={`Branch ${index + 1} Address`}
-                className="border p-2 w-full rounded-md"
-                required
-              />
+              <div className="flex items-center gap-x-4">
+                <input
+                  type="text"
+                  value={branch.name}
+                  onChange={(e) =>
+                    handleBranchChange(index, "name", e.target.value)
+                  }
+                  placeholder={`Branch ${index + 1} Name`}
+                  className="border p-3 w-full rounded-lg"
+                  required
+                />
+                <input
+                  type="text"
+                  value={branch.address}
+                  onChange={(e) =>
+                    handleBranchChange(index, "address", e.target.value)
+                  }
+                  placeholder={`Branch ${index + 1} Address`}
+                  className="border p-3 w-full rounded-lg"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAddBranch(index)}
+                  className="main-button"
+                >
+                  <BiAddToQueue className="text-xl" />
+                </button>
+                {branches.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleLessBranch(index)}
+                    className="main-button"
+                  >
+                    <FaRegTrashAlt className="text-xl" />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={handleAddBranch}
-            className="bg-blue-500 text-white py-2 px-4 rounded-md mb-4"
-          >
-            Add Branch
-          </button>
         </div>
 
-        <button
-          type="submit"
-          className="bg-primary_maroon text-white py-2 px-4 rounded-md w-full"
-        >
-          Register Provider
-        </button>
+        <div className="flex justify-end pt-6">
+          <button type="submit" className="main-button">
+            Register Facility
+          </button>
+        </div>
       </form>
     </div>
   );

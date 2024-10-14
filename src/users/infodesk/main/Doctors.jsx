@@ -43,8 +43,10 @@ const Doctors = () => {
 
   const filteredDoctors = doctors.filter(
     (doctor) =>
-      doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.consultationDays.toLowerCase().includes(searchTerm.toLowerCase())
+      doctor.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.consultationDays.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (authLoading || userLoading || doctorsLoading) {
@@ -68,38 +70,46 @@ const Doctors = () => {
         className="border border-gray-300 rounded-md p-2 w-[30%] mb-4 text-sm"
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {filteredDoctors.map((doctor) => (
-          <div
-            key={doctor.id}
-            className="flex border border-transparent shadow-md rounded-sm items-center max-h-[300px] w-fit"
-          >
-            <div className="flex flex-col justify-between">
-              <div className="p-4">
-                <h1 className="text-lg py-2">{doctor.name}</h1>
-                <h2 className="text-lightgray text-sm">{doctor.specialty}</h2>
-                <h2 className="text-lightgray text-sm">
-                  Available for consultations {doctor.consultationDays}
-                </h2>
-              </div>
-              <div className="p-4 text-sm">
-                <button
-                  className="action-button"
-                  onClick={() => handleDoctorClick(doctor)}
-                >
-                  Details
-                </button>
-              </div>
-            </div>
-            <div className="py-2 px-4">
-              <img
-                src={doctor.imageUrl}
-                alt={`${doctor.name}`}
-                className="w-[150px] h-[200px] object-cover object-center"
-              />
-            </div>
-          </div>
-        ))}
+      <div className="overflow-x-auto overflow-y-auto border rounded-xl overflow-hidden shadow-md">
+        <table className="w-full text-left text-[#171A1F] text-sm">
+          <thead>
+            <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
+              <th className="p-4">Doctor Name</th>
+              <th className="p-4">Specialty</th>
+              <th className="p-4">Consultation Days</th>
+              <th className="p-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white">
+            {filteredDoctors.length > 0 ? (
+              filteredDoctors.map((doctor) => (
+                <tr key={doctor.id} className="border-b">
+                  <td className="p-3 pl-4">
+                    {doctor.firstName + " " + doctor.lastName}
+                  </td>
+                  <td className="p-3">{doctor.specialty}</td>
+                  <td className="p-3">
+                    {doctor.consultationDays}
+                  </td>
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={() => handleDoctorClick(doctor)}
+                      className="action-button"
+                    >
+                      Details
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center p-4">
+                  No doctors found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       <DoctorDetailsModal

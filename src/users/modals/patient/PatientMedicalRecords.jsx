@@ -23,7 +23,7 @@ const PatientMedicalRecords = ({ medicalRecords }) => {
                 <strong>MR-ID:</strong> {recordId}
               </p>
               <button
-                className="bg-primary_maroon text-white rounded-md py-1 px-4"
+                className="main-button"
                 onClick={() => toggleRecord(recordId)}
               >
                 {isOpen ? "-" : "+"}
