@@ -52,6 +52,7 @@ const HealthcareProvider = () => {
         branchData[branchId] = {
           name: branch.name,
           address: branch.address,
+          id: branchId
         };
       });
 

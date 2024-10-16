@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { getDatabase, ref as dbRef, set, get } from "firebase/database";
+import {
+  getDatabase,
+  ref as dbRef,
+  set,
+  get,
+  onValue,
+} from "firebase/database";
 import {
   ref as storageRef,
   uploadBytes,
@@ -14,6 +20,30 @@ import { TiArrowSortedDown } from "react-icons/ti";
 import { IoMdCloudUpload } from "react-icons/io";
 
 const CreateAccount = () => {
+  // console.log(doctors)
+  const [doctors, setDoctors] = useState([]);
+  const [assignedDoctor, setAssignedDoctor] = useState("");
+
+  useEffect(() => {
+    const db = getDatabase();
+    const doctorsRef = dbRef(db, "doctors");
+
+    const unsubscribe = onValue(doctorsRef, (snapshot) => {
+      const doctorsData = snapshot.val();
+      if (doctorsData) {
+        const doctorList = Object.keys(doctorsData).map((doctorId) => ({
+          id: doctorId,
+          ...doctorsData[doctorId],
+        }));
+        setDoctors(doctorList);
+      } else {
+        setDoctors([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const [role, setRole] = useState("Information Desk Staff");
   const [branch, setBranch] = useState("Select Branch");
   const [branches, setBranches] = useState([]);
@@ -196,7 +226,7 @@ const CreateAccount = () => {
                 hospital_id: providerType === "hospital" ? providerId : null,
                 clinic_id: providerType === "clinic" ? providerId : null,
                 providerType,
-                assignedDoctor: "",
+                assignedDoctor: assignedDoctor,
                 branch_id: branch,
               },
               status: "active",
@@ -281,7 +311,11 @@ const CreateAccount = () => {
       </div>
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+          <div
+            className={`grid ${
+              role === "patient" ? "grid-cols-4" : "grid-cols-3"
+            } gap-x-6 gap-y-4`}
+          >
             <div className="flex flex-col">
               <label>Facility Type</label>
               <div className="relative justify-end">
@@ -353,6 +387,34 @@ const CreateAccount = () => {
                 </span>
               </div>
             </div>
+
+            {role === "patient" && (
+              <div className="flex flex-col">
+                <label>Assigned Doctor</label>
+                <div className="relative justify-end">
+                  <select
+                    value={assignedDoctor}
+                    onChange={(e) => setAssignedDoctor(e.target.value)}
+                    className="border rounded-md p-2 cursor-pointer w-full outline-none"
+                    required
+                  >
+                    <option value="">Select Doctor</option>
+
+                    {doctors.map((doctor) => (
+                      <option key={doctor.id} value={doctor.id}>
+                        {doctor.firstName} {doctor.lastName} {" - "} {doctor.specialty}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <TiArrowSortedDown
+                      size={20}
+                      className="text-primary_maroon"
+                    />
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
           <div className="grid gap-x-6 gap-y-4">
             {/* Common Fields */}
@@ -613,10 +675,7 @@ const CreateAccount = () => {
             )}
           </div>
           <div className="flex justify-end">
-            <button
-              type="submit"
-              className="main-button"
-            >
+            <button type="submit" className="main-button">
               Save
             </button>
           </div>

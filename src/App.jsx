@@ -20,8 +20,10 @@ import DashboardInfodesk from "./users/infodesk/Dashboard";
 import Accounts from "./users/superadmin/accounts/Accounts";
 import DoctorsSuperadmin from "./users/superadmin/view-accounts/Doctors";
 import PatientsSuperadmin from "./users/superadmin/view-accounts/Patients";
-import InfodeskSuperadmin from "./users/superadmin/view-accounts/Infodesk";
-import PhilhealthSuperadmin from "./users/superadmin/view-accounts/Philhealth";
+// import InfodeskSuperadmin from "./users/superadmin/view-accounts/Infodesk";
+// import PhilhealthSuperadmin from "./users/superadmin/view-accounts/Philhealth";
+import StaffManagement from "./users/superadmin/view-accounts/StaffManagement";
+
 import HealthcareProvider from "./users/superadmin/accounts/HealthcareProvider";
 import FacilityList from "./users/superadmin/view-providers/FacilityList";
 // import HospitalsSuperadmin from "./users/superadmin/view-providers/Hospitals";
@@ -104,13 +106,17 @@ const App = () => {
                             path="patients-superadmin"
                             element={<PatientsSuperadmin />}
                           />
-                          <Route
+                          {/* <Route
                             path="infodesk-superadmin"
                             element={<InfodeskSuperadmin />}
                           />
                           <Route
                             path="philhealth-superadmin"
                             element={<PhilhealthSuperadmin />}
+                          /> */}
+                          <Route
+                            path="user-management/:role"
+                            element={<StaffManagement />}
                           />
                           <Route
                             path="healthcare-provider"

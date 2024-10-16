@@ -104,7 +104,7 @@ const Doctors = () => {
                       onClick={() => handleDoctorClick(doctor)}
                       className="action-button"
                     >
-                      Details
+                      View
                     </button>
                   </td>
                 </tr>

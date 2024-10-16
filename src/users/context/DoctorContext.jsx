@@ -28,6 +28,7 @@ export const DoctorProvider = ({ children }) => {
       });
 
       setDoctors(doctorsData);
+      console.log(doctors)
       setLoading(false);
       console.log("Fetched doctor details:", doctorsData);
     };

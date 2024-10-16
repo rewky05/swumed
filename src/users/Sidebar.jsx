@@ -8,7 +8,7 @@ import {
   FaThLarge,
   FaChevronDown,
   FaChevronRight,
-  FaHospital
+  FaHospital,
 } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import { useUserContext } from "./context/UserContext";
@@ -46,7 +46,11 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`${user.role === "superadmin" ? 'w-[18rem]' : 'w-64'} h-screen pt-20 fixed bg-white border-r border-r-lightgray border-opacity-10 flex flex-col`}>
+    <div
+      className={`${
+        user.role === "superadmin" ? "w-[18rem]" : "w-64"
+      } h-screen pt-20 fixed bg-white border-r border-r-lightgray border-opacity-10 flex flex-col`}
+    >
       <nav className="flex-grow">
         <ul className="space-y-2 p-4">
           {/* Superadmin */}
@@ -70,9 +74,7 @@ const Sidebar = () => {
                 <button
                   onClick={toggleAccountsSection}
                   className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
-                    isAccountsOpen
-                      ? "sidebar-active"
-                      : "sidebar-inactive"
+                    isAccountsOpen ? "sidebar-active" : "sidebar-inactive"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -122,7 +124,7 @@ const Sidebar = () => {
                       </li>
                     </Link>
 
-                    <Link to="/infodesk-superadmin">
+                    {/* <Link to="/infodesk-superadmin">
                       <li
                         className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                           activeItem === "/infodesk-superadmin"
@@ -144,6 +146,29 @@ const Sidebar = () => {
                       >
                         Philhealth Staff
                       </li>
+                    </Link> */}
+                    <Link to="/user-management/infodesk">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/user-management/infodesk"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
+                        }`}
+                      >
+                        Information Desk Staff
+                      </li>
+                    </Link>
+
+                    <Link to="/user-management/philhealth">
+                      <li
+                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                          activeItem === "/user-management/philhealth"
+                            ? "sidebar-active"
+                            : "sidebar-inactive"
+                        }`}
+                      >
+                        Philhealth Staff
+                      </li>
                     </Link>
                   </div>
                 )}
@@ -154,9 +179,7 @@ const Sidebar = () => {
                 <button
                   onClick={toggleProvidersSection}
                   className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
-                    isProvidersOpen
-                      ? "sidebar-active"
-                      : "sidebar-inactive"
+                    isProvidersOpen ? "sidebar-active" : "sidebar-inactive"
                   }`}
                 >
                   <FaHospital className="mr-3" />
@@ -205,7 +228,6 @@ const Sidebar = () => {
                         Clinics
                       </li>
                     </Link>
-
                   </div>
                 )}
               </div>

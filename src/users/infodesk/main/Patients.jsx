@@ -171,7 +171,7 @@ const Patients = () => {
                 const doctorName =
                   doctorNames[assignedDoctor] || "To be assigned";
                 const hasClinicalSummary =
-                  medicalRecord.details.clinicalSummary;
+                  medicalRecord?.details?.clinicalSummary;
                 // const isEditable = isEditableRecord(patient);
 
                 return (
