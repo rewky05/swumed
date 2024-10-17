@@ -60,7 +60,7 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/superadmin-dashboard"
-                      ? "sidebar-active"
+                      ? "bg-primary_maroon text-white font-semibold"
                       : "sidebar-inactive"
                   }`}
                 >
@@ -74,7 +74,7 @@ const Sidebar = () => {
                 <button
                   onClick={toggleAccountsSection}
                   className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
-                    isAccountsOpen ? "sidebar-active" : "sidebar-inactive"
+                    isAccountsOpen ? "bg-primary_maroon text-white font-semibold" : "sidebar-inactive"
                   }`}
                 >
                   <FaUsers className="mr-3" />
@@ -90,7 +90,7 @@ const Sidebar = () => {
                   <div className="ml-6 mt-2 space-y-2">
                     <Link to="/accounts">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/accounts"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -102,7 +102,7 @@ const Sidebar = () => {
 
                     <Link to="/doctors-superadmin">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/doctors-superadmin"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -114,7 +114,7 @@ const Sidebar = () => {
 
                     <Link to="/patients-superadmin">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/patients-superadmin"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -149,7 +149,7 @@ const Sidebar = () => {
                     </Link> */}
                     <Link to="/user-management/infodesk">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/user-management/infodesk"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -161,7 +161,7 @@ const Sidebar = () => {
 
                     <Link to="/user-management/philhealth">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/user-management/philhealth"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -179,7 +179,7 @@ const Sidebar = () => {
                 <button
                   onClick={toggleProvidersSection}
                   className={`flex items-center w-full text-left py-2 px-4 rounded-lg cursor-pointer ${
-                    isProvidersOpen ? "sidebar-active" : "sidebar-inactive"
+                    isProvidersOpen ? "bg-primary_maroon text-white font-semibold" : "sidebar-inactive"
                   }`}
                 >
                   <FaHospital className="mr-3" />
@@ -195,7 +195,7 @@ const Sidebar = () => {
                   <div className="ml-6 mt-2 space-y-2">
                     <Link to="/healthcare-provider">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/healthcare-provider"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -207,7 +207,7 @@ const Sidebar = () => {
 
                     <Link to="/hospitals-superadmin">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/hospitals-superadmin"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -219,7 +219,7 @@ const Sidebar = () => {
 
                     <Link to="/clinics-superadmin">
                       <li
-                        className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
+                        className={`flex items-center py-2 px-4 cursor-pointer ${
                           activeItem === "/clinics-superadmin"
                             ? "sidebar-active"
                             : "sidebar-inactive"
@@ -241,7 +241,7 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/infodesk-dashboard"
-                      ? "sidebar-active"
+                      ? "bg-primary_maroon text-white font-semibold"
                       : "sidebar-inactive"
                   }`}
                 >
@@ -254,7 +254,7 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/patients"
-                      ? "sidebar-active"
+                      ? "bg-primary_maroon text-white font-semibold"
                       : "sidebar-inactive"
                   }`}
                 >
@@ -267,7 +267,7 @@ const Sidebar = () => {
                 <li
                   className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                     activeItem === "/doctors"
-                      ? "sidebar-active"
+                      ? "bg-primary_maroon text-white font-semibold"
                       : "sidebar-inactive"
                   }`}
                 >
@@ -284,7 +284,7 @@ const Sidebar = () => {
               <li
                 className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                   activeItem === "/philhealth-dashboard"
-                    ? "sidebar-active"
+                    ? "bg-primary_maroon text-white font-semibold"
                     : "sidebar-inactive"
                 }`}
               >
@@ -298,7 +298,7 @@ const Sidebar = () => {
             <li
               className={`flex items-center py-2 px-4 rounded-lg cursor-pointer ${
                 activeItem === "/settings"
-                  ? "sidebar-active"
+                  ? "bg-primary_maroon text-white font-semibold"
                   : "sidebar-inactive"
               }`}
             >
@@ -309,10 +309,10 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      <div className="flex justify-center p-8">
+      <div className="flex items-center py-4 px-4 rounded-lg">
         <button
           onClick={handleLogout}
-          className="rounded-md text-white py-[7px] px-8 flex items-center bg-primary_maroon hover:bg-light_maroon hover:transition-all duration-200"
+          className="rounded-md text-white py-[7px] w-full flex justify-center items-center bg-primary_maroon hover:bg-light_maroon hover:transition-all duration-200"
         >
           <BiLogOut className="mr-2" />
           Logout

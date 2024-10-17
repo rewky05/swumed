@@ -3,7 +3,7 @@ import { IoMdAdd } from "react-icons/io";
 import PatientDetailsModal from "../../modals/patient/PatientDetails";
 import CreatePatient from "../../modals/patient/CreatePatient";
 import DischargePatient from "../../modals/patient/DischargePatient";
-import ClinicalSummary from "../../modals/ClinicalSummary";
+// import ClinicalSummary from "../../modals/ClinicalSummary";
 import { useUserContext } from "../../context/UserContext";
 import { useMedicalRecordsContext } from "../../context/MedicalRecordsContext";
 import { getDatabase, ref, onValue } from "firebase/database";
@@ -17,7 +17,7 @@ const Patients = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showCreatePatientModal, setShowCreatePatientModal] = useState(false);
   const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
-  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  // const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [showDischargePatientModal, setShowDischargePatientModal] =
     useState(false);
   const [patientToDischarge, setPatientToDischarge] = useState(null);
@@ -89,7 +89,8 @@ const Patients = () => {
         doctorNames[
           medicalRecord.healthcareProvider?.assignedDoctor
         ]?.toLowerCase() || "unknown doctor";
-      const date = medicalRecord?.date?.toLowerCase() || "";
+      const dateAdmitted = medicalRecord?.dateAdmitted?.toLowerCase() || "";
+      const dateDischarged = medicalRecord?.dateDischarged?.toLowerCase() || "";
       const status = medicalRecord?.status?.toLowerCase() || "";
 
       const searchLower = searchTerm.toLowerCase();
@@ -97,7 +98,8 @@ const Patients = () => {
       return (
         patientName.includes(searchLower) ||
         philhealthNumber.includes(searchLower) ||
-        date.includes(searchLower) ||
+        dateAdmitted.includes(searchLower) ||
+        dateDischarged.includes(searchLower) ||
         doctorName.includes(searchLower) ||
         status.includes(searchLower)
       );
@@ -108,10 +110,10 @@ const Patients = () => {
     setShowPatientDetailsModal(true);
   };
 
-  const handleClinicalSummary = (patient, recordId) => {
-    setSelectedPatient({ patient, recordId });
-    setShowSummaryModal(true);
-  };
+  // const handleClinicalSummary = (patient, recordId) => {
+  //   setSelectedPatient({ patient, recordId });
+  //   setShowSummaryModal(true);
+  // };
 
   // const isEditableRecord = (record) => {
   //   if (!record.medicalRecords) return false;
@@ -119,7 +121,7 @@ const Patients = () => {
   //     (mr) =>
   //       mr.healthcareProvider?.hospital_id === user.hospital_id &&
   //       mr.healthcareProvider?.branch_id === user.branch_id &&
-  //       mr.status === "Active"
+  //       mr.status === "admitted"
   //   );
   // };
 
@@ -152,7 +154,8 @@ const Patients = () => {
             <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
               <th className="p-4">Philhealth #</th>
               <th className="p-4">Patient Name</th>
-              <th className="p-4">Date</th>
+              <th className="p-4">Date Admitted</th>
+              <th className="p-4">Date Discharged</th>
               <th className="p-4">Doctor Assigned</th>
               <th className="p-4">Status</th>
               <th className="p-4 text-center">Actions</th>
@@ -170,8 +173,8 @@ const Patients = () => {
                   medicalRecord?.healthcareProvider?.assignedDoctor;
                 const doctorName =
                   doctorNames[assignedDoctor] || "To be assigned";
-                const hasClinicalSummary =
-                  medicalRecord?.details?.clinicalSummary;
+                // const hasClinicalSummary =
+                //   medicalRecord?.details?.clinicalSummary;
                 // const isEditable = isEditableRecord(patient);
 
                 return (
@@ -184,12 +187,17 @@ const Patients = () => {
                         " " +
                         patient.generalData?.lastName || "N/A"}
                     </td>
-                    <td className="p-3">{medicalRecord?.date || "N/A"}</td>
+                    <td className="p-3">
+                      {medicalRecord?.dateAdmitted || "N/A"}
+                    </td>
+                    <td className="p-3">
+                      {medicalRecord?.dateDischarged || "N/A"}
+                    </td>
                     <td className="p-3">{doctorName || "To be assigned"}</td>
                     <td className="p-3">
                       <span
                         className={`font-semibold ${
-                          medicalRecord?.status.toLowerCase() === "active" &&
+                          medicalRecord?.status.toLowerCase() === "admitted" &&
                           "text-green-500"
                         } ${
                           medicalRecord?.status.toLowerCase() ===
@@ -212,11 +220,11 @@ const Patients = () => {
                       </button>
                       {user.role !== "Philhealth Staff" && (
                         <>
-                          <button
+                          {/* <button
                             className={`action-button ${
                               doctorName === "To be assigned" ||
                               medicalRecord?.status === "Discharged" ||
-                              medicalRecord?.status.toLowerCase() === "active" || hasClinicalSummary
+                              medicalRecord?.status.toLowerCase() === "admitted" || hasClinicalSummary
                                 ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                                 : ""
                             }`}
@@ -226,6 +234,9 @@ const Patients = () => {
                             }
                           >
                             +Summary
+                          </button> */}
+                          <button className={`action-button opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon`}>
+                            New Record
                           </button>
                           <button
                             onClick={() =>
@@ -235,10 +246,7 @@ const Patients = () => {
                               doctorName === "To be assigned" ||
                               medicalRecord?.status.toLowerCase() ===
                                 "discharged" ||
-                              medicalRecord?.status.toLowerCase() ===
-                                "active" ||
-                              medicalRecord?.ClinicalSummary ||
-                              !hasClinicalSummary
+                              medicalRecord?.status.toLowerCase() === "admitted"
                                 ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
                                 : ""
                             }`}
@@ -275,7 +283,7 @@ const Patients = () => {
         />
       )}
 
-      {showSummaryModal && (
+      {/* {showSummaryModal && (
         <ClinicalSummary
           patient={selectedPatient.patient}
           recordId={selectedPatient.recordId}
@@ -285,7 +293,7 @@ const Patients = () => {
           }}
           onClose={() => setShowSummaryModal(false)}
         />
-      )}
+      )} */}
 
       {showDischargePatientModal && (
         <DischargePatient

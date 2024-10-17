@@ -1,12 +1,26 @@
 import { useState, useEffect } from "react";
 import { getDatabase, ref, onValue } from "firebase/database";
 
+import { FaSortUp, FaSortDown } from "react-icons/fa";
+import { FaSortAlphaUp, FaSortAlphaDown } from "react-icons/fa";
+
 const Staff = ({ role, title }) => {
   const [staffMembers, setStaffMembers] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchHospitalAndBranchNames = async (hospitalId, clinicId, branchId) => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Sorting state
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  const fetchHospitalAndBranchNames = async (
+    hospitalId,
+    clinicId,
+    branchId
+  ) => {
     try {
       const db = getDatabase();
       const branchRef = hospitalId
@@ -60,11 +74,12 @@ const Staff = ({ role, title }) => {
             .filter((key) => data[key].role === role)
             .map(async (key) => {
               const { hospital_id, clinic_id, branch_id } = data[key];
-              const { hospitalName, branchName } = await fetchHospitalAndBranchNames(
-                hospital_id || null,
-                clinic_id || null,
-                branch_id
-              );
+              const { hospitalName, branchName } =
+                await fetchHospitalAndBranchNames(
+                  hospital_id || null,
+                  clinic_id || null,
+                  branch_id
+                );
               return {
                 id: key,
                 ...data[key],
@@ -110,6 +125,37 @@ const Staff = ({ role, title }) => {
     setSearchTerm(e.target.value);
   };
 
+  const sortedStaff = filteredStaff.sort((a, b) => {
+    const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+    const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+    if (sortOrder === "asc") {
+      return nameA > nameB ? 1 : -1;
+    } else {
+      return nameA < nameB ? 1 : -1;
+    }
+  });
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentStaff = sortedStaff.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleSortOrderChange = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(filteredStaff.length / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="p-8">
       <div className="flex flex-col gap-4 mb-4">
@@ -117,13 +163,18 @@ const Staff = ({ role, title }) => {
           <h2 className="text-xl font-semibold p-1">{title}</h2>
         </div>
 
-        <input
-          type="text"
-          placeholder={`Search ${title}`}
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="border border-gray-300 rounded-md p-2 w-[32.9%] text-sm"
-        />
+        <div className="flex items-center gap-x-4">
+          <input
+            type="text"
+            placeholder={`Search ${title}`}
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="border border-gray-300 rounded-md p-2 w-[32.9%] text-sm"
+          />
+          <button onClick={handleSortOrderChange} className="text-xl">
+            {sortOrder === "asc" ? <FaSortAlphaUp /> : <FaSortAlphaDown />}
+          </button>
+        </div>
 
         <div className="overflow-x-auto overflow-y-auto border rounded-xl overflow-hidden">
           <table className="w-full text-left text-[#171A1F] text-sm">

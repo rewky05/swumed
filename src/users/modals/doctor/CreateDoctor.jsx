@@ -16,6 +16,7 @@ import { storage } from "../../../backend/firebase";
 import { useUserContext } from "../../context/UserContext";
 import { useAuthContext } from "../../context/AuthContext";
 import { IoMdCloudUpload } from "react-icons/io";
+import { TiArrowSortedDown } from "react-icons/ti";
 
 const CreateDoctor = ({ onClose }) => {
   const { user } = useUserContext();
@@ -26,6 +27,7 @@ const CreateDoctor = ({ onClose }) => {
   const [password, setPassword] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [fileName, setFileName] = useState("No file selected");
+  const [status, setStatus] = useState("");
 
   const [doctorData, setDoctorData] = useState({
     firstName: "",
@@ -88,6 +90,7 @@ const CreateDoctor = ({ onClose }) => {
           clinic_id: clinic_id || null,
           hospital_id: hospital_id || null,
           providerType: clinic_id ? "clinic" : "hospital",
+          status: status,
         },
         imageUrl: imageFile,
         firstName: doctorData.firstName,
@@ -123,80 +126,119 @@ const CreateDoctor = ({ onClose }) => {
         <div className="space-y-6">
           <div className="grid gap-x-6 gap-y-4">
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <input
-                type="text"
-                placeholder="First Name"
-                value={doctorData.firstName}
-                onChange={(e) =>
-                  setDoctorData({ ...doctorData, firstName: e.target.value })
-                }
-                className="border rounded-md p-2"
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                value={doctorData.lastName}
-                onChange={(e) =>
-                  setDoctorData({ ...doctorData, lastName: e.target.value })
-                }
-                className="border rounded-md p-2"
-              />
+              <div className="flex flex-col">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={doctorData.firstName}
+                  onChange={(e) =>
+                    setDoctorData({ ...doctorData, firstName: e.target.value })
+                  }
+                  className="border rounded-md p-2"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={doctorData.lastName}
+                  onChange={(e) =>
+                    setDoctorData({ ...doctorData, lastName: e.target.value })
+                  }
+                  className="border rounded-md p-2"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border rounded-md p-2"
-              />
+              <div className="flex flex-col">
+                <label>Email</label>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border rounded-md p-2"
+                />
+              </div>
 
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="border rounded-md p-2"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-              <input
-                type="text"
-                placeholder="Specialty"
-                value={doctorData.specialty}
-                onChange={(e) =>
-                  setDoctorData({ ...doctorData, specialty: e.target.value })
-                }
-                className="border rounded-md p-2"
-              />
-
-              <input
-                type="text"
-                placeholder="Consultation Days"
-                value={doctorData.consultationDays}
-                onChange={(e) =>
-                  setDoctorData({
-                    ...doctorData,
-                    consultationDays: e.target.value,
-                  })
-                }
-                className="border rounded-md p-2"
-              />
+              <div className="flex flex-col">
+                <label>Password</label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border rounded-md p-2"
+                />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4">
               <div className="flex flex-col">
+                <label>Specialty</label>
+                <input
+                  type="text"
+                  placeholder="Specialty"
+                  value={doctorData.specialty}
+                  onChange={(e) =>
+                    setDoctorData({ ...doctorData, specialty: e.target.value })
+                  }
+                  className="border rounded-md p-2"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label>Consultation Days</label>
+                <input
+                  type="text"
+                  placeholder="Consultation Days"
+                  value={doctorData.consultationDays}
+                  onChange={(e) =>
+                    setDoctorData({
+                      ...doctorData,
+                      consultationDays: e.target.value,
+                    })
+                  }
+                  className="border rounded-md p-2"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <div className="flex flex-col">
+                <label>Status</label>
+                <div className="relative justify-end">
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    required
+                    className="border rounded-md p-2 cursor-pointer select-none w-full"
+                  >
+                    <option value="">Select Status</option>
+                    <option value="Male">Active</option>
+                    <option value="Female">Visiting</option>
+                  </select>
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <TiArrowSortedDown
+                      size={20}
+                      className="text-primary_maroon"
+                    />
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col">
                 <label>Profile Picture</label>
-                <div className="flex items-center p-2">
+                <div className="flex items-center">
                   <input
                     type="file"
                     accept=".jpg, .jpeg, .png"
                     id="fileInput"
                     onChange={handleFileChange}
-                    className="appearance-none hidden px-14"
+                    className="appearance-none hidden"
                   />
                   <label className="" htmlFor="fileInput">
-                    <i className="py-2 text-3xl cursor-pointer">
+                    <i className="py-2 text-2xl cursor-pointer">
                       <IoMdCloudUpload />
                     </i>
                   </label>

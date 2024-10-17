@@ -1,14 +1,17 @@
 import { Outlet } from "react-router-dom";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
-import { useUserContext } from "./context/UserContext"; 
+import { useUserContext } from "./context/UserContext";
+import Loading from "./Loading";
 
 const Layout = () => {
-  const { user } = useUserContext(); 
-  console.log({user})
+  const { user } = useUserContext();
+  console.log({ user });
 
   if (!user) {
-    return <p>Loading or Unauthorized...</p>; 
+    return (
+      <Loading />
+    );
   }
 
   return (

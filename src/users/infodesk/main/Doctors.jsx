@@ -6,6 +6,7 @@ import CreateDoctor from "../../modals/doctor/CreateDoctor";
 import { useAuthContext } from "../../context/AuthContext";
 import { useUserContext } from "../../context/UserContext";
 import { useDoctorContext } from "../../context/DoctorContext";
+import Loading from "../../Loading";
 
 const Doctors = () => {
   const { currentUser, loading: authLoading } = useAuthContext();
@@ -45,12 +46,17 @@ const Doctors = () => {
     (doctor) =>
       doctor.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doctor.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.consultationDays.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.healthcareProvider?.status
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      doctor.consultationDays
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (authLoading || userLoading || doctorsLoading) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   return (
@@ -77,19 +83,28 @@ const Doctors = () => {
               <th className="p-4">Doctor Name</th>
               <th className="p-4">Specialty</th>
               <th className="p-4">Consultation Days</th>
+              <th className="p-4">Status</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white">
             {filteredDoctors.length > 0 ? (
               filteredDoctors.map((doctor) => (
-                <tr key={doctor.id} className="border-b">
+                <tr key={doctor.id} className="">
                   <td className="p-3 pl-4">
                     {doctor.firstName + " " + doctor.lastName}
                   </td>
                   <td className="p-3">{doctor.specialty}</td>
-                  <td className="p-3">
-                    {doctor.consultationDays}
+                  <td className="p-3">{doctor.consultationDays}</td>
+                  <td
+                    className={`p-3 font-semibold ${
+                      doctor.healthcareProvider?.status.toLowerCase() ===
+                      "active"
+                        ? "text-green-500"
+                        : "text-yellow-500"
+                    }`}
+                  >
+                    {doctor.healthcareProvider?.status}
                   </td>
                   <td className="p-3 text-center">
                     <button

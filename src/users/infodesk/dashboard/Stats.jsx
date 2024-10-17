@@ -13,8 +13,9 @@ import {
   PointElement,
 } from "chart.js";
 import { getDatabase, ref, onValue } from "firebase/database";
-import { useUserContext } from "../../context/UserContext"; 
-import { usePatientContext } from "../../context/PatientContext"; 
+import { useUserContext } from "../../context/UserContext";
+import { usePatientContext } from "../../context/PatientContext";
+import Loading from "../../Loading";
 
 ChartJS.register(
   CategoryScale,
@@ -30,7 +31,7 @@ ChartJS.register(
 
 const Stats = () => {
   const { user, loading } = useUserContext();
-  const { patients, fetchPatients } = usePatientContext(); 
+  const { patients, fetchPatients } = usePatientContext();
 
   const [patientsData, setPatientsData] = useState([0, 0]);
   const [doctorsData, setDoctorsData] = useState([]);
@@ -45,7 +46,7 @@ const Stats = () => {
         console.log("User data:", user);
 
         if (patients.length === 0) {
-          await fetchPatients(); 
+          await fetchPatients();
         }
 
         if (patients.length > 0 && totalPatients !== patients.length) {
@@ -59,19 +60,27 @@ const Stats = () => {
         const facilityId = user.hospital_id || user.clinic_id;
         const facilityType = user.hospital_id ? "hospitals" : "clinics";
         const branchId = user.branch_id;
-        const branchRef = ref(db, `${facilityType}/${facilityId}/branch/${branchId}`);
+        const branchRef = ref(
+          db,
+          `${facilityType}/${facilityId}/branch/${branchId}`
+        );
 
         onValue(branchRef, (snapshot) => {
           const branchData = snapshot.val();
 
           if (branchData) {
-            const doctorsCount = branchData.doctors ? Object.keys(branchData.doctors).length : 0;
+            const doctorsCount = branchData.doctors
+              ? Object.keys(branchData.doctors).length
+              : 0;
             setTotalDoctors(doctorsCount);
             setDoctorsData([doctorsCount, 6 - doctorsCount]);
 
             const admissions = [1];
             Object.entries(branchData.patients || {}).forEach(([patientId]) => {
-              const patientRef = ref(db, `patients/${patientId}/medicalRecords`);
+              const patientRef = ref(
+                db,
+                `patients/${patientId}/medicalRecords`
+              );
               onValue(patientRef, (recordSnapshot) => {
                 const records = recordSnapshot.val();
                 if (records) {
@@ -85,7 +94,7 @@ const Stats = () => {
             });
 
             setRecentAdmissions(admissions.length);
-            setAdmissionsData(admissions.map((_, i) => (i + 1) * 1)); 
+            setAdmissionsData(admissions.map((_, i) => (i + 1) * 1));
           }
         });
       }
@@ -95,18 +104,21 @@ const Stats = () => {
   }, [user, fetchPatients, patients, totalPatients]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <Loading />
+    );
   }
 
   return (
     <div className="p-8">
       <h2 className="text-xl font-semibold mb-4">Overview Statistics</h2>
       <div className="flex justify-between items-center w-full gap-8">
-        
         {/* Total Patients */}
         <div className="shadow-md p-4 rounded-lg bg-white w-full flex items-center h-36">
           <div className="pr-12">
-            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">Total Patients</h3>
+            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">
+              Total Patients
+            </h3>
             <div className="text-3xl font-bold">{totalPatients}</div>
           </div>
           <div className="w-[35%] h-full flex justify-center items-center">
@@ -117,8 +129,14 @@ const Stats = () => {
                   {
                     label: "Patients",
                     data: patientsData,
-                    backgroundColor: ["rgba(102, 24, 30, 1)", "rgba(255, 99, 132, 0.5)"],
-                    borderColor: ["rgba(102, 24, 30, 1)", "rgba(255, 99, 132, 0.5)"],
+                    backgroundColor: [
+                      "rgba(102, 24, 30, 1)",
+                      "rgba(255, 99, 132, 0.5)",
+                    ],
+                    borderColor: [
+                      "rgba(102, 24, 30, 1)",
+                      "rgba(255, 99, 132, 0.5)",
+                    ],
                     borderWidth: 1,
                   },
                 ],
@@ -142,7 +160,9 @@ const Stats = () => {
         {/* Total Doctors */}
         <div className="shadow-md p-4 rounded-lg bg-white w-full flex items-center h-36">
           <div className="pr-12">
-            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">Total Doctors</h3>
+            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">
+              Total Doctors
+            </h3>
             <div className="text-3xl font-bold">{totalDoctors}</div>
           </div>
           <div className="w-[35%] h-full flex justify-center items-center">
@@ -180,7 +200,9 @@ const Stats = () => {
         {/* Recent Admissions */}
         <div className="shadow-md p-4 rounded-lg bg-white w-full flex items-center h-36">
           <div className="pr-12">
-            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">Recent Admissions</h3>
+            <h3 className="pr-12 text-md text-[#9095A0] font-semibold mb-2">
+              Recent Admissions
+            </h3>
             <div className="text-3xl font-bold">{recentAdmissions}</div>
           </div>
           <div className="w-[35%] h-full flex justify-center items-center">

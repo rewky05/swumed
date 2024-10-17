@@ -1,4 +1,6 @@
 import { useState } from "react";
+import "ldrs/cardio";
+
 import { MdPerson } from "react-icons/md";
 import { useAuthContext } from "./context/AuthContext";
 import { useUserContext } from "./context/UserContext";
@@ -24,7 +26,17 @@ const Settings = () => {
     }
   };
 
-  if (!userDetails) return <p>Loading...</p>;
+  if (!userDetails)
+    return (
+      <div>
+        <l-cardio
+          size="50"
+          stroke="4"
+          speed="2"
+          color="maroon"
+        ></l-cardio>
+      </div>
+    );
 
   return (
     <div className="p-8 mx-auto justify-center items-center place-content-center my-6">
@@ -46,7 +58,9 @@ const Settings = () => {
           <div className="">
             <div className="flex flex-col p-4">
               <h2 className="text-lightgray">Full Name</h2>
-              <h2>{ userDetails.firstName + " " + userDetails.lastName || "N/A"}</h2>
+              <h2>
+                {userDetails.firstName + " " + userDetails.lastName || "N/A"}
+              </h2>
             </div>
             <div className="flex flex-col p-4">
               <h2 className="text-lightgray">Phone Number</h2>

@@ -8,6 +8,7 @@ import CreateDoctor from "../../modals/doctor/CreateDoctor";
 import { useAuthContext } from "../../context/AuthContext";
 import { useUserContext } from "../../context/UserContext";
 import { useDoctorContext } from "../../context/DoctorContext";
+import Loading from "../../Loading";
 
 const Doctors = () => {
   const { currentUser, loading: authLoading } = useAuthContext();
@@ -47,12 +48,17 @@ const Doctors = () => {
     (doctor) =>
       doctor.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doctor.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.consultationDays.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.healthcareProvider?.status
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      doctor.consultationDays
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (authLoading || userLoading || doctorsLoading) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   return (
@@ -78,26 +84,35 @@ const Doctors = () => {
       />
       {/* grid grid-cols-2 md:grid-cols-3 gap-4 h-[250px] */}
       {/* flex flex-row gap-4 overflow-x-auto */}
-      <div className="overflow-x-auto overflow-y-auto h-[250px] border rounded-xl overflow-hidden shadow-md">
+      <div className="overflow-x-auto overflow-y-auto max-h-[270px] border rounded-xl overflow-hidden shadow-md">
         <table className="w-full text-left text-[#171A1F] text-sm">
           <thead>
             <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
               <th className="p-4">Doctor Name</th>
               <th className="p-4">Specialty</th>
               <th className="p-4">Consultation Days</th>
+              <th className="p-4">Status</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white">
             {filteredDoctors.length > 0 ? (
               filteredDoctors.map((doctor) => (
-                <tr key={doctor.id} className="border-b">
+                <tr key={doctor.id} className="">
                   <td className="p-3 pl-4">
                     {doctor.firstName + " " + doctor.lastName}
                   </td>
                   <td className="p-3">{doctor.specialty}</td>
-                  <td className="p-3">
-                    {doctor.consultationDays}
+                  <td className="p-3">{doctor.consultationDays}</td>
+                  <td
+                    className={`p-3 font-semibold ${
+                      doctor.healthcareProvider?.status.toLowerCase() ===
+                      "active"
+                        ? "text-green-500"
+                        : "text-yellow-500"
+                    }`}
+                  >
+                    {doctor.healthcareProvider?.status}
                   </td>
                   <td className="p-3 text-center">
                     <button

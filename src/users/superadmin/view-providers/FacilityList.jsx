@@ -3,6 +3,7 @@ import { getDatabase, ref, onValue } from "firebase/database";
 import ViewModal from "../../modals/branch/View";
 import UpdateModal from "../../modals/branch/Update";
 import DeleteModal from "../../modals/branch/Delete";
+import Loading from "../../Loading";
 
 const FacilityList = ({ facilityType, title }) => {
   const [loading, setLoading] = useState(true);
@@ -60,7 +61,9 @@ const FacilityList = ({ facilityType, title }) => {
   // };
 
   if (loading) {
-    return <div>Loading {title}...</div>;
+    return (
+      <Loading />
+    );
   }
 
   return (
@@ -123,7 +126,9 @@ const FacilityList = ({ facilityType, title }) => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(facility.id, branchId, branch)}
+                          onClick={() =>
+                            handleDelete(facility.id, branchId, branch)
+                          }
                           className="action-button"
                         >
                           Delete

@@ -15,7 +15,7 @@ select {
 }
 
 .action-button {
-  @apply text-primary_maroon border border-primary_maroon p-2 rounded-md mx-2 hover:bg-primary_maroon hover:text-white hover:transition-all duration-200;
+  @apply text-primary_maroon border border-primary_maroon p-2 mx-2 my-1 hover:bg-primary_maroon hover:text-white hover:transition-all duration-200;
 }
 
 .cancel-button {
@@ -23,7 +23,7 @@ select {
 }
 
 .sidebar-active {
-  @apply bg-primary_maroon text-white font-semibold;
+  @apply border-b-primary_maroon border-b-2 pb-2 text-primary_maroon font-semibold;
 }
 
 .sidebar-inactive {

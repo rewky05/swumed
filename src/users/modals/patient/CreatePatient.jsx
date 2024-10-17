@@ -3,12 +3,16 @@ import { getDatabase, ref, set } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useUserContext } from "../../context/UserContext";
 import { useAuthContext } from "../../context/AuthContext";
+import { useDoctorContext } from "../../context/DoctorContext";
 import { useNavigate } from "react-router-dom";
 
 import { TiArrowSortedDown } from "react-icons/ti";
 
 const CreatePatient = ({ onClose }) => {
   const { user } = useUserContext();
+  const { doctors, loading } = useDoctorContext();
+  const [assignedDoctor, setAssignedDoctor] = useState("");
+
   const auth = getAuth();
 
   const { hospital_id, clinic_id, branch_id, providerType } = user;
@@ -27,6 +31,7 @@ const CreatePatient = ({ onClose }) => {
   const [contactNumber, setContactNumber] = useState("");
   const [maritalStatus, setMaritalStatus] = useState("");
   const [nationality, setNationality] = useState("");
+  const [room, setRoom] = useState("");
 
   const { signIn, signOutUser } = useAuthContext();
   const navigate = useNavigate();
@@ -99,16 +104,17 @@ const CreatePatient = ({ onClose }) => {
           },
           medicalRecords: {
             [medicalRecordId]: {
-              date: new Date().toLocaleDateString("en-PH"),
+              dateAdmitted: new Date().toLocaleDateString("en-PH"),
               healthcareProvider: {
-                assignedDoctor: "",
+                assignedDoctor: assignedDoctor,
+                room: room,
                 branch_id: branch_id,
                 clinic_id: clinic_id ? clinic_id : null,
                 hospital_id: hospital_id ? hospital_id : null,
                 type: clinic_id ? "clinic" : "hospital",
               },
               isHidden: false,
-              status: "Active",
+              status: "Admitted",
             },
           },
           qrCode: "",
@@ -140,14 +146,14 @@ const CreatePatient = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 top-20 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 shadow-md w-[950px] my-8">
+      <div className="bg-white rounded-lg p-6 shadow-md w-[1150px] my-8">
         <h2 className="text-2xl font-bold text-primary_maroon mb-4">
           Add Patient
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-x-6 gap-y-4">
-            <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+            <div className="grid grid-cols-5 gap-x-6 gap-y-4">
               <div className="flex flex-col">
                 <label>First Name</label>
                 <input
@@ -181,7 +187,84 @@ const CreatePatient = ({ onClose }) => {
                   className="border rounded-md p-2"
                 />
               </div>
+              <div className="flex flex-col">
+                <label>Assigned Doctor</label>
+                <div className="relative justify-end">
+                  <select
+                    value={assignedDoctor}
+                    onChange={(e) => setAssignedDoctor(e.target.value)}
+                    className="border rounded-md p-2 cursor-pointer w-full outline-none"
+                    required
+                  >
+                    <option value="">Select Doctor</option>
+
+                    {doctors.map((doctor) => (
+                      <option key={doctor.id} value={doctor.id}>
+                        {doctor.firstName} {doctor.lastName} {" - "}{" "}
+                        {doctor.specialty}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <TiArrowSortedDown
+                      size={20}
+                      className="text-primary_maroon"
+                    />
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <label>Room No.</label>
+                <input
+                  type="text"
+                  placeholder="Enter room no."
+                  value={room}
+                  onChange={(e) => setRoom(e.target.value)}
+                  required
+                  className="border rounded-md p-2"
+                />
+              </div>
             </div>
+            {/* <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+              <div className="flex flex-col">
+                <label>Assigned Doctor</label>
+                <div className="relative justify-end">
+                  <select
+                    value={assignedDoctor}
+                    onChange={(e) => setAssignedDoctor(e.target.value)}
+                    className="border rounded-md p-2 cursor-pointer w-full outline-none"
+                    required
+                  >
+                    <option value="">Select Doctor</option>
+
+                    {doctors.map((doctor) => (
+                      <option key={doctor.id} value={doctor.id}>
+                        {doctor.firstName} {doctor.lastName} {" - "}{" "}
+                        {doctor.specialty}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <TiArrowSortedDown
+                      size={20}
+                      className="text-primary_maroon"
+                    />
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <label>Room No.</label>
+                <input
+                  type="text"
+                  placeholder="Enter room no."
+                  value={room}
+                  onChange={(e) => setRoom(e.target.value)}
+                  required
+                  className="border rounded-md p-2"
+                />
+              </div>
+            </div> */}
+
             <div className="grid grid-cols-3 gap-x-6 gap-y-4">
               <div className="flex flex-col">
                 <label>Email</label>

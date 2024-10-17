@@ -1,3 +1,5 @@
+import Loading from "../../Loading";
+
 const DoctorDetails = ({ isOpen, doctor, onClose }) => {
   if (!isOpen || !doctor) return null;
 

@@ -13,21 +13,81 @@ const Patients = () => {
   const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
   const [doctorNames, setDoctorNames] = useState({});
 
+  const fetchHospitalAndBranchNames = async (hospitalId, clinicId, branchId) => {
+    try {
+      const db = getDatabase();
+      
+      let facilityRef, branchRef;
+      
+      if (hospitalId) {
+        // Set references for hospitals
+        facilityRef = ref(db, `hospitals/${hospitalId}/name`);
+        branchRef = ref(db, `hospitals/${hospitalId}/branch/${branchId}/name`);
+      } else if (clinicId) {
+        // Set references for clinics
+        facilityRef = ref(db, `clinics/${clinicId}/name`);
+        branchRef = ref(db, `clinics/${clinicId}/branch/${branchId}/name`);
+      } else {
+        // No hospital or clinic ID provided
+        return { hospitalName: "Unknown Facility", branchName: "Unknown Branch" };
+      }
+      
+      // Fetch facility (hospital/clinic) name
+      const facilityName = await new Promise((resolve) => {
+        onValue(facilityRef, (snapshot) => {
+          resolve(snapshot.val() || "Unknown Facility");
+        });
+      });
+      
+      // Fetch branch name
+      const branchName = await new Promise((resolve) => {
+        onValue(branchRef, (snapshot) => {
+          resolve(snapshot.val() || "Unknown Branch");
+        });
+      });
+  
+      return { hospitalName: facilityName, branchName };
+      
+    } catch (error) {
+      console.error("Error fetching facility and branch names:", error);
+      return { hospitalName: "Error", branchName: "Error" };
+    }
+  };  
+
   const fetchMedicalRecords = () => {
     const db = getDatabase();
     const patientsRef = ref(db, "patients");
-
-    onValue(patientsRef, (snapshot) => {
+  
+    onValue(patientsRef, async (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const patientsList = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key],
-        }));
+        const patientsList = await Promise.all(
+          Object.keys(data)
+            .filter((key) => data[key])
+            .map(async (key) => {
+              // Assume the first medical record is used here
+              const medicalRecord = Object.values(data[key].medicalRecords || {})[0];
+              const { hospital_id, clinic_id, branch_id } = medicalRecord?.healthcareProvider || {};
+  
+              // Fetch facility and branch names
+              const { hospitalName, branchName } = await fetchHospitalAndBranchNames(
+                hospital_id || null,
+                clinic_id || null,
+                branch_id
+              );
+  
+              return {
+                id: key,
+                ...data[key],
+                hospitalName,
+                branchName,
+              };
+            })
+        );
         setMedicalRecords(patientsList);
       }
     });
-  };
+  };  
 
   useEffect(() => {
     fetchMedicalRecords();
@@ -43,40 +103,46 @@ const Patients = () => {
       if (doctorsData) {
         const doctorMap = {};
         Object.keys(doctorsData).forEach((key) => {
-          doctorMap[key] = doctorsData[key].firstName + " " + doctorsData[key].lastName;
+          doctorMap[key] =
+            doctorsData[key].firstName + " " + doctorsData[key].lastName;
         });
         setDoctorNames(doctorMap);
       }
     });
   };
 
-  const filteredPatients = medicalRecords
-    .filter((patient) => {
-      const patientFirstName = patient.generalData?.firstName?.toLowerCase() || "";
-      const patientLastName = patient.generalData?.lastName?.toLowerCase() || "";
-      const philhealthNumber = patient.generalData?.philhealthNumber || "";
+  const filteredPatients = medicalRecords.filter((patient) => {
+    const patientFirstName =
+      patient.generalData?.firstName?.toLowerCase() || "";
+    const patientLastName = patient.generalData?.lastName?.toLowerCase() || "";
+    const philhealthNumber = patient.generalData?.philhealthNumber || "";
+    const branchName = patient.branchName?.toLowerCase() || "";
+    const facilityName = patient.hospitalName?.toLowerCase() || "";
 
-      const medicalRecord =
-        Object.values(patient.medicalRecords || {})[0] || {};
+    const medicalRecord = Object.values(patient.medicalRecords || {})[0] || {};
 
-      const doctorName =
-        doctorNames[
-          medicalRecord.healthcareProvider?.assignedDoctor
-        ]?.toLowerCase() || "unknown doctor";
-      const date = medicalRecord?.date?.toLowerCase() || "";
-      const status = medicalRecord?.status?.toLowerCase() || "";
+    const doctorName =
+      doctorNames[
+        medicalRecord.healthcareProvider?.assignedDoctor
+      ]?.toLowerCase() || "unknown doctor";
+    const dateAdmitted = medicalRecord?.dateAdmitted?.toLowerCase() || "";
+    const dateDischarged = medicalRecord?.dateDischarged?.toLowerCase() || "";
+    const status = medicalRecord?.status?.toLowerCase() || "";
 
-      const searchLower = searchTerm.toLowerCase();
+    const searchLower = searchTerm.toLowerCase();
 
-      return (
-        patientFirstName.includes(searchLower) ||
-        patientLastName.includes(searchLower) ||
-        philhealthNumber.includes(searchLower) ||
-        date.includes(searchLower) ||
-        doctorName.includes(searchLower) ||
-        status.includes(searchLower)
-      );
-    });
+    return (
+      patientFirstName.includes(searchLower) ||
+      patientLastName.includes(searchLower) ||
+      philhealthNumber.includes(searchLower) ||
+      dateAdmitted.includes(searchLower) ||
+      dateDischarged.includes(searchLower) ||
+      doctorName.includes(searchLower) ||
+      status.includes(searchLower) ||
+      branchName.includes(searchLower) ||
+      facilityName.includes(searchLower)
+    );
+  });
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -107,7 +173,10 @@ const Patients = () => {
             <tr className="border-b bg-[#FAFAFB] text-[#565E6C] font-medium p-4">
               <th className="p-4">Philhealth #</th>
               <th className="p-4">Patient Name</th>
-              <th className="p-4">Date</th>
+              <th className="p-4">Date Admitted</th>
+              <th className="p-4">Date Discharged</th>
+              <th className="p-4">Facility</th>
+              <th className="p-4">Branch</th>
               <th className="p-4">Doctor Assigned</th>
               <th className="p-4">Status</th>
               <th className="p-4 text-center">Actions</th>
@@ -128,16 +197,31 @@ const Patients = () => {
 
                 return (
                   <tr key={patientId} className="">
-                    <td className="p-3 pl-4">{patient.generalData?.philhealthNumber || "N/A"}</td>
-                    <td className="p-3">
-                      {patient.generalData?.firstName + " " + patient.generalData?.lastName || "N/A"}
+                    <td className="p-3 pl-4">
+                      {patient.generalData?.philhealthNumber || "N/A"}
                     </td>
-                    <td className="p-3">{medicalRecord?.date || "N/A"}</td>
+                    <td className="p-3">
+                      {patient.generalData?.firstName +
+                        " " +
+                        patient.generalData?.lastName || "N/A"}
+                    </td>
+                    <td className="p-3">
+                      {medicalRecord?.dateAdmitted || "N/A"}
+                    </td>
+                    <td className="p-3">
+                      {medicalRecord?.dateDischarged || "N/A"}
+                    </td>
+                    <td className="p-3">
+                      {patient?.hospitalName || "N/A"}
+                    </td>
+                    <td className="p-3">
+                      {patient?.branchName || "N/A"}
+                    </td>
                     <td className="p-3">{doctorName || "To be assigned"}</td>
                     <td className="p-3">
-                    <span
+                      <span
                         className={`font-semibold ${
-                          medicalRecord?.status.toLowerCase() === "active" &&
+                          medicalRecord?.status.toLowerCase() === "admitted" &&
                           "text-green-500"
                         } ${
                           medicalRecord?.status.toLowerCase() ===

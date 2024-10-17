@@ -12,7 +12,8 @@ import {
 import { getDatabase, ref, onValue } from "firebase/database";
 import { auth } from "../../backend/firebase";
 import { getUserData } from "../../backend/getUserData";
-import { useUserContext } from "../context/UserContext"; 
+import { useUserContext } from "../context/UserContext";
+import Loading from "../Loading";
 
 ChartJS.register(
   CategoryScale,
@@ -34,7 +35,7 @@ const Dashboard = () => {
   const [philHealthStaffCount, setPhilHealthStaffCount] = useState(0);
 
   const [loading, setLoading] = useState(true);
-  const { user } = useUserContext(); 
+  const { user } = useUserContext();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
@@ -108,7 +109,10 @@ const Dashboard = () => {
     }
   }, [user]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <Loading />
+    );
 
   return (
     user &&
@@ -119,7 +123,7 @@ const Dashboard = () => {
           <div className="shadow-md p-4 rounded-lg bg-white w-[590px]">
             <h3 className="text-lg font-semibold mb-4">Hospitals vs Clinics</h3>
             <Bar
-            className=""
+              className=""
               data={{
                 labels: ["Hospitals", "Clinics"],
                 datasets: [
@@ -130,8 +134,7 @@ const Dashboard = () => {
                       "rgba(128, 118, 118)",
                       "rgba(128, 118, 118)",
                     ],
-                    
-                    
+
                     borderRadius: 60,
                   },
                 ],
@@ -142,7 +145,7 @@ const Dashboard = () => {
                   y: {
                     beginAtZero: true,
                     // grid: {
-                    //   color: "rgba(102, 24, 30, 1)" 
+                    //   color: "rgba(102, 24, 30, 1)"
                     // }
                   },
                 },
@@ -150,7 +153,7 @@ const Dashboard = () => {
                   legend: {
                     display: false,
                     // grid: {
-                    //   color: "rgba(102, 24, 30, 1)" 
+                    //   color: "rgba(102, 24, 30, 1)"
                     // }
                   },
                 },
@@ -185,9 +188,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="p-4 rounded-lg bg- text-primary_maroon text-center">
-                    <h3 className="font-semibold mb-2">
-                      PhilHealth Staff
-                    </h3>
+                    <h3 className="font-semibold mb-2">PhilHealth Staff</h3>
                     <div className="text-6xl font-bold">
                       {philHealthStaffCount}
                     </div>

@@ -23,6 +23,7 @@ const CreateAccount = () => {
   // console.log(doctors)
   const [doctors, setDoctors] = useState([]);
   const [assignedDoctor, setAssignedDoctor] = useState("");
+  const [room, setRoom] = useState("");
 
   useEffect(() => {
     const db = getDatabase();
@@ -45,6 +46,7 @@ const CreateAccount = () => {
   }, []);
 
   const [role, setRole] = useState("Information Desk Staff");
+  const [status, setStatus] = useState("");
   const [branch, setBranch] = useState("Select Branch");
   const [branches, setBranches] = useState([]);
   const [specialty, setSpecialty] = useState("");
@@ -116,6 +118,7 @@ const CreateAccount = () => {
     setNationality("");
     setImageFile(null);
     setConsultationDays("");
+    setStatus("");
   }, [role]);
 
   const handleFileName = async (e) => {
@@ -227,10 +230,11 @@ const CreateAccount = () => {
                 clinic_id: providerType === "clinic" ? providerId : null,
                 providerType,
                 assignedDoctor: assignedDoctor,
+                room: room,
                 branch_id: branch,
               },
-              status: "active",
-              date: new Date().toLocaleDateString("en-PH"),
+              status: "Admitted",
+              dateAdmitted: new Date().toLocaleDateString("en-PH"),
               isHidden: false,
             },
           },
@@ -244,6 +248,7 @@ const CreateAccount = () => {
             clinic_id: providerType === "clinic" ? providerId : null,
             providerType,
             branch_id: branch,
+            status: status,
           },
           specialty,
           firstName,
@@ -254,8 +259,7 @@ const CreateAccount = () => {
         };
       } else {
         dataToSave = {
-          account: { email: user.email },
-          emailVerified: false,
+          account: { email: user.email, emailVerified: false },
           hospital_id: providerType === "hospital" ? providerId : null,
           clinic_id: providerType === "clinic" ? providerId : null,
           branch_id: branch,
@@ -283,7 +287,7 @@ const CreateAccount = () => {
       await signOutUser();
       await signIn(adminEmail, adminPassword);
 
-      navigate("/superadmin-dashboard");
+      navigate("/accounts");
       console.log(
         "Account created successfully in Authentication and Realtime Database!"
       );
@@ -313,7 +317,7 @@ const CreateAccount = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div
             className={`grid ${
-              role === "patient" ? "grid-cols-4" : "grid-cols-3"
+              role === "patient" ? "grid-cols-5" : "grid-cols-3"
             } gap-x-6 gap-y-4`}
           >
             <div className="flex flex-col">
@@ -389,31 +393,45 @@ const CreateAccount = () => {
             </div>
 
             {role === "patient" && (
-              <div className="flex flex-col">
-                <label>Assigned Doctor</label>
-                <div className="relative justify-end">
-                  <select
-                    value={assignedDoctor}
-                    onChange={(e) => setAssignedDoctor(e.target.value)}
-                    className="border rounded-md p-2 cursor-pointer w-full outline-none"
-                    required
-                  >
-                    <option value="">Select Doctor</option>
+              <>
+                <div className="flex flex-col">
+                  <label>Assigned Doctor</label>
+                  <div className="relative justify-end">
+                    <select
+                      value={assignedDoctor}
+                      onChange={(e) => setAssignedDoctor(e.target.value)}
+                      className="border rounded-md p-2 cursor-pointer w-full outline-none"
+                      required
+                    >
+                      <option value="">Select Doctor</option>
 
-                    {doctors.map((doctor) => (
-                      <option key={doctor.id} value={doctor.id}>
-                        {doctor.firstName} {doctor.lastName} {" - "} {doctor.specialty}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                    <TiArrowSortedDown
-                      size={20}
-                      className="text-primary_maroon"
-                    />
-                  </span>
+                      {doctors.map((doctor) => (
+                        <option key={doctor.id} value={doctor.id}>
+                          {doctor.firstName} {doctor.lastName} {" - "}{" "}
+                          {doctor.specialty}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                      <TiArrowSortedDown
+                        size={20}
+                        className="text-primary_maroon"
+                      />
+                    </span>
+                  </div>
                 </div>
-              </div>
+                <div className="flex flex-col">
+                  <label>Room No.</label>
+                  <input
+                    type="text"
+                    placeholder="Enter room no."
+                    value={room}
+                    onChange={(e) => setRoom(e.target.value)}
+                    required
+                    className="border rounded-md p-2"
+                  />
+                </div>
+              </>
             )}
           </div>
           <div className="grid gap-x-6 gap-y-4">
@@ -641,7 +659,7 @@ const CreateAccount = () => {
             )}
 
             {role === "Doctor" && (
-              <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+              <div className="grid grid-cols-3 gap-x-6 gap-y-4">
                 <div className="flex flex-col">
                   <label>Consultation Days</label>
                   <input
@@ -651,6 +669,28 @@ const CreateAccount = () => {
                     onChange={(e) => setConsultationDays(e.target.value)}
                     className="border rounded-md p-2"
                   />
+                </div>
+
+                <div className="flex flex-col">
+                  <label>Status</label>
+                  <div className="relative justify-end">
+                    <select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      required
+                      className="border rounded-md p-2 cursor-pointer select-none w-full"
+                    >
+                      <option value="">Select Status</option>
+                      <option value="Male">Active</option>
+                      <option value="Female">Visiting</option>
+                    </select>
+                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                      <TiArrowSortedDown
+                        size={20}
+                        className="text-primary_maroon"
+                      />
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex flex-col">
@@ -664,7 +704,7 @@ const CreateAccount = () => {
                       className="appearance-none hidden px-4"
                     />
                     <label className="" htmlFor="fileInput">
-                      <i className="py-2 text-3xl cursor-pointer">
+                      <i className="py-2 text-2xl cursor-pointer">
                         <IoMdCloudUpload />
                       </i>
                     </label>

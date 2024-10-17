@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ref, onValue } from "firebase/database";
 import { database } from "../../../backend/firebase";
 import DoctorDetailsModal from "../../modals/doctor/DoctorDetails";
+import Loading from "../../Loading";
 
 const Doctors = () => {
   const [doctors, setDoctors] = useState([]);
@@ -30,10 +31,79 @@ const Doctors = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (doctors.length > 0) {
+      const fetchHealthcareProviderDetails = async () => {
+        const updatedDoctors = await Promise.all(
+          doctors.map(async (doctor) => {
+            const { healthcareProvider } = doctor;
+            let providerName = "";
+            let branchName = "";
+
+            if (healthcareProvider?.hospital_id) {
+              const hospitalRef = ref(
+                database,
+                `hospitals/${healthcareProvider.hospital_id}`
+              );
+              const hospitalSnapshot = await new Promise((resolve) =>
+                onValue(hospitalRef, resolve, { onlyOnce: true })
+              );
+              providerName = hospitalSnapshot.val()?.name || "Unknown Hospital";
+            } else if (healthcareProvider?.clinic_id) {
+              const clinicRef = ref(
+                database,
+                `clinics/${healthcareProvider.clinic_id}`
+              );
+              const clinicSnapshot = await new Promise((resolve) =>
+                onValue(clinicRef, resolve, { onlyOnce: true })
+              );
+              providerName = clinicSnapshot.val()?.name || "Unknown Clinic";
+            }
+
+            const clinicBranchPath = `clinics/${healthcareProvider.clinic_id}/branch/${healthcareProvider.branch_id}`;
+            const hospitalBranchPath = `hospitals/${healthcareProvider.hospital_id}/branch/${healthcareProvider.branch_id}`;
+
+            if (
+              healthcareProvider?.hospital_id &&
+              healthcareProvider?.branch_id
+            ) {
+              const branchRef = ref(database, hospitalBranchPath);
+              const branchSnapshot = await new Promise((resolve) =>
+                onValue(branchRef, resolve, { onlyOnce: true })
+              );
+              branchName = branchSnapshot.val()?.name || "Unknown Branch";
+            } else if (
+              healthcareProvider?.clinic_id &&
+              healthcareProvider?.branch_id
+            ) {
+              const branchRef = ref(database, clinicBranchPath);
+              const branchSnapshot = await new Promise((resolve) =>
+                onValue(branchRef, resolve, { onlyOnce: true })
+              );
+              branchName = branchSnapshot.val()?.name || "Unknown Branch";
+            }
+
+            return {
+              ...doctor,
+              providerName,
+              branchName,
+            };
+          })
+        );
+        setDoctors(updatedDoctors);
+      };
+
+      fetchHealthcareProviderDetails();
+    }
+  }, [doctors]);
+
   const filteredDoctors = doctors.filter(
     (doctor) =>
       doctor.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doctor.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.healthcareProvider?.status
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       doctor.consultationDays
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
@@ -54,7 +124,7 @@ const Doctors = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <Loading />;
   }
 
   return (
@@ -76,6 +146,9 @@ const Doctors = () => {
               <th className="p-4">Specialty</th>
               <th className="p-4">Consultation Days</th>
               <th className="p-4">Email</th>
+              <th className="p-4">Facility</th>
+              <th className="p-4">Branch</th>
+              <th className="p-4">Status</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -87,12 +160,19 @@ const Doctors = () => {
                     {doctor.firstName + " " + doctor.lastName || "N/A"}
                   </td>
                   <td className="p-3">{doctor.specialty || "N/A"}</td>
-                  <td className="p-3">
-                    {doctor.consultationDays || "N/A"}
-                  </td>
-                  <td className="p-3">
-                  {doctor.account.email || "N/A"}
-
+                  <td className="p-3">{doctor.consultationDays || "N/A"}</td>
+                  <td className="p-3">{doctor.account.email || "N/A"}</td>
+                  <td className="p-3">{doctor.providerName || "N/A"}</td>
+                  <td className="p-3">{doctor.branchName || "N/A"}</td>
+                  <td
+                    className={`p-3 font-semibold ${
+                      doctor.healthcareProvider?.status.toLowerCase() ===
+                      "active"
+                        ? "text-green-500"
+                        : "text-yellow-500"
+                    }`}
+                  >
+                    {doctor.healthcareProvider?.status}
                   </td>
                   <td className="p-3 text-center">
                     <button

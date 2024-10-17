@@ -8,6 +8,7 @@ import {
 import { auth } from "./backend/firebase";
 import { getUserData } from "./backend/getUserData";
 import Login from "./Login";
+import Loading from "./users/Loading"
 import Layout from "./users/Layout";
 import Patients from "./users/infodesk/main/Patients";
 import Doctors from "./users/infodesk/main/Doctors";
@@ -57,7 +58,9 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Loading />
+    );
   }
 
   return (

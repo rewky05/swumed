@@ -42,9 +42,14 @@ const PatientMedicalRecords = ({ medicalRecords }) => {
                     {record.healthcareProvider.assignedDoctor}
                   </p>
                 )}
-                {record.date && (
+                {record.dateAdmitted && (
                   <p>
-                    <strong>Date:</strong> {record.date}
+                    <strong>Date Admitted:</strong> {record.dateAdmitted}
+                  </p>
+                )}
+                {record.dateDischarged && (
+                  <p>
+                    <strong>Date Discharged:</strong> {record.dateDischarged}
                   </p>
                 )}
                 {record.details && (

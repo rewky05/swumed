@@ -26,22 +26,22 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
           }));
 
           const filteredRecords = recordsList.filter((record) => {
-            const hasClinicalSummary = record.details.clinicalSummary;
+            // const hasClinicalSummary = record.details.clinicalSummary;
 
             if (user.hospital_id) {
               return (
                 record.healthcareProvider.hospital_id === user.hospital_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                record.status.toLowerCase() === "to be discharged" &&
-                hasClinicalSummary
+                record.status.toLowerCase() === "to be discharged" 
+                // && hasClinicalSummary
               );
             }
             if (user.clinic_id) {
               return (
                 record.healthcareProvider.clinic_id === user.clinic_id &&
                 record.healthcareProvider.branch_id === user.branch_id &&
-                record.status.toLowerCase() === "to be discharged" &&
-                hasClinicalSummary
+                record.status.toLowerCase() === "to be discharged" 
+                // && hasClinicalSummary
               );
             }
             return false;
@@ -82,13 +82,17 @@ const DischargePatient = ({ patient, recordId, onConfirm, onClose }) => {
 
     const db = getDatabase();
 
-    const recordPath = `patients/${patientId}/medicalRecords/${recordId}/status`;
-
-    const updates = {};
-    updates[recordPath] = "Discharged";
+    const recordPath = `patients/${patientId}/medicalRecords/${recordId}`;
+    const dataToUpdate = {
+      status: "Discharged",
+      dateDischarged: new Date().toLocaleDateString("en-PH")
+    }
+    
+    // const updates = {};
+    // updates[recordPath] = dataToUpdate
 
     try {
-      await update(ref(db), updates);
+      await update(ref(db, recordPath), dataToUpdate);
       console.log("Medical record successfully updated to Discharged");
     } catch (error) {
       console.error("Error discharging patient:", error);
