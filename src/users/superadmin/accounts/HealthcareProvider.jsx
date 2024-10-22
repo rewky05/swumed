@@ -4,13 +4,15 @@ import { getDatabase, ref, push, set } from "firebase/database";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
 
-import { FaRegTrashAlt } from "react-icons/fa";
-import { BiAddToQueue } from "react-icons/bi";
+// import { FaRegTrashAlt } from "react-icons/fa";
+// import { BiAddToQueue } from "react-icons/bi";
 
 const HealthcareProvider = () => {
   const { user } = useUserContext();
   const [providerType, setProviderType] = useState("clinics");
   const [name, setName] = useState("");
+  const [branchToRemoveIndex, setBranchToRemoveIndex] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [branches, setBranches] = useState([{ id: 1, name: "", address: "" }]);
   const navigate = useNavigate();
 
@@ -26,6 +28,11 @@ const HealthcareProvider = () => {
       const updatedBranches = branches.filter((_, i) => i !== index);
       setBranches(updatedBranches);
     }
+  };
+
+  const handleShowModal = (index) => {
+    setBranchToRemoveIndex(index);
+    setShowModal(true);
   };
 
   const handleBranchChange = (index, field, value) => {
@@ -52,7 +59,7 @@ const HealthcareProvider = () => {
         branchData[branchId] = {
           name: branch.name,
           address: branch.address,
-          id: branchId
+          id: branchId,
         };
       });
 
@@ -119,43 +126,49 @@ const HealthcareProvider = () => {
           </div>
           {branches.map((branch, index) => (
             <div key={branch.id} className="mb-4 border p-4 rounded-md">
-              <div className="flex items-center gap-x-4">
-                <input
-                  type="text"
-                  value={branch.name}
-                  onChange={(e) =>
-                    handleBranchChange(index, "name", e.target.value)
-                  }
-                  placeholder={`Branch ${index + 1} Name`}
-                  className="border p-3 w-full rounded-lg"
-                  required
-                />
-                <input
-                  type="text"
-                  value={branch.address}
-                  onChange={(e) =>
-                    handleBranchChange(index, "address", e.target.value)
-                  }
-                  placeholder={`Branch ${index + 1} Address`}
-                  className="border p-3 w-full rounded-lg"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAddBranch(index)}
-                  className="main-button"
-                >
-                  <BiAddToQueue className="text-xl" />
-                </button>
-                {branches.length > 1 && (
+              <div className="flex flex-col gap-y-2">
+                <div className="m-1">
+                  <input
+                    type="text"
+                    value={branch.name}
+                    onChange={(e) =>
+                      handleBranchChange(index, "name", e.target.value)
+                    }
+                    placeholder={`Branch ${index + 1} Name`}
+                    className="border p-3 my-1 w-full rounded-lg"
+                    required
+                  />
+                  <input
+                    type="text"
+                    value={branch.address}
+                    onChange={(e) =>
+                      handleBranchChange(index, "address", e.target.value)
+                    }
+                    placeholder={`Branch ${index + 1} Address`}
+                    className="border p-3 my-1 w-full rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
                   <button
                     type="button"
-                    onClick={() => handleLessBranch(index)}
-                    className="main-button"
+                    onClick={() => handleAddBranch(index)}
+                    className="action-button"
                   >
-                    <FaRegTrashAlt className="text-xl" />
+                    {/* <BiAddToQueue className="text-xl" /> */}
+                    Add Branch
                   </button>
-                )}
+                  {branches.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleShowModal(index)}
+                      className="discharge-button"
+                    >
+                      {/* <FaRegTrashAlt className="text-xl" /> */}
+                      Remove Branch
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -167,6 +180,33 @@ const HealthcareProvider = () => {
           </button>
         </div>
       </form>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-md shadow-lg p-6 max-w-md">
+            <h2 className="text-center text-lg font-semibold mb-4">
+              Are you sure you want to remove this branch?
+            </h2>
+            <div className="flex justify-end pb-[4px]">
+              <button
+                onClick={() => setShowModal(false)}
+                className="cancel-button"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  handleLessBranch(branchToRemoveIndex);
+                  setShowModal(false);
+                }}
+                className="main-button"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Select from "react-select";
 import { getDatabase, ref, set } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useUserContext } from "../../context/UserContext";
@@ -35,6 +36,10 @@ const CreatePatient = ({ onClose }) => {
 
   const { signIn, signOutUser } = useAuthContext();
   const navigate = useNavigate();
+
+  const handleAssignedDoctorChange = (selectedOption) => {
+    setAssignedDoctor(selectedOption.value);
+  };
 
   const handleBirthdateChange = (e) => {
     const selectedDate = e.target.value;
@@ -187,7 +192,7 @@ const CreatePatient = ({ onClose }) => {
                   className="border rounded-md p-2"
                 />
               </div>
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <label>Assigned Doctor</label>
                 <div className="relative justify-end">
                   <select
@@ -206,6 +211,71 @@ const CreatePatient = ({ onClose }) => {
                     ))}
                   </select>
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <TiArrowSortedDown
+                      size={20}
+                      className="text-primary_maroon"
+                    />
+                  </span>
+                </div>
+              </div> */}
+              <div className="flex flex-col">
+                <label>Assigned Doctor</label>
+                <div className="relative justify-end">
+                  <Select
+                    value={
+                      assignedDoctor
+                        ? doctors.find(
+                            (doctor) => doctor.id === assignedDoctor.value
+                          )
+                        : null
+                    }
+                    onChange={handleAssignedDoctorChange}
+                    options={doctors.map((doctor) => ({
+                      value: doctor.id,
+                      label: `${doctor.firstName} ${doctor.lastName} - ${doctor.specialty}`,
+                    }))}
+                    classNamePrefix="react-select"
+                    placeholder="Select Doctor"
+                    styles={{
+                      placeholder: (base) => ({
+                        ...base,
+                        // padding: "6px"
+                      }),
+                      control: (base, state) => ({
+                        ...base,
+                        borderRadius: "6px",
+                        outline: "black",
+                        border: state.isFocused
+                          ? "1px solid #ccc"
+                          : "1px solid #ccc",
+                        // minHeight: "36px",
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        paddingLeft: "12px",
+                        padding: "4.5px",
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected
+                          ? "#66181E"
+                          : state.isFocused
+                          ? "#f5eaea"
+                          : "white",
+                        color: state.isSelected ? "white" : "black",
+                        ":active": {
+                          backgroundColor: "#e0b3b3",
+                        },
+                        hover: {
+                          cursor: "pointer",
+                        },
+                      }),
+                      indicatorSeparator: () => ({
+                        display: "none",
+                      }),
+                    }}
+                  />
+                  <span className="absolute right-[9px] top-1/2 transform -translate-y-1/2 cursor-pointer">
                     <TiArrowSortedDown
                       size={20}
                       className="text-primary_maroon"

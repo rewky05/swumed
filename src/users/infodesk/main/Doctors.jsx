@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoIosSearch } from "react-icons/io";
 import DoctorDetailsModal from "../../modals/doctor/DoctorDetails";
 import CreateDoctor from "../../modals/doctor/CreateDoctor";
 
@@ -68,13 +68,20 @@ const Doctors = () => {
         </button>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search Doctors"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4 text-sm"
-      />
+      <div className="flex w-[406px]">
+        <div className="relative justify-end w-full">
+          <input
+            type="text"
+            placeholder="Search Doctors"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="border border-gray-300 w-full rounded-md p-2 mb-4 text-sm"
+          />
+          <span className="absolute right-3 top-[35%] transform -translate-y-1/2">
+            <IoIosSearch size={20} className="text-gray-400" />
+          </span>
+        </div>
+      </div>
 
       <div className="overflow-x-auto overflow-y-auto border rounded-xl overflow-hidden shadow-md">
         <table className="w-full text-left text-[#171A1F] text-sm">

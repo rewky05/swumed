@@ -129,7 +129,7 @@ const FacilityList = ({ facilityType, title }) => {
                           onClick={() =>
                             handleDelete(facility.id, branchId, branch)
                           }
-                          className="action-button"
+                          className="discharge-button"
                         >
                           Delete
                         </button>

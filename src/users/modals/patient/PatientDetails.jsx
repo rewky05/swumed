@@ -36,7 +36,7 @@ const PatientDetails = ({ patient, onClose }) => {
           <PatientMedicalRecords medicalRecords={medicalRecords} />
         </div>
 
-        <div className="flex mt-4">
+        <div className="flex justify-end mt-4">
           <button
             onClick={onClose}
             className="main-button"

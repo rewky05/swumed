@@ -3,6 +3,7 @@ import PatientDetailsModal from "../../modals/patient/PatientDetails";
 import { useUserContext } from "../../context/UserContext";
 import { useMedicalRecordsContext } from "../../context/MedicalRecordsContext";
 import { getDatabase, ref, onValue } from "firebase/database";
+import { IoIosSearch } from "react-icons/io";
 
 const Patients = () => {
   const { user } = useUserContext();
@@ -13,12 +14,16 @@ const Patients = () => {
   const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
   const [doctorNames, setDoctorNames] = useState({});
 
-  const fetchHospitalAndBranchNames = async (hospitalId, clinicId, branchId) => {
+  const fetchHospitalAndBranchNames = async (
+    hospitalId,
+    clinicId,
+    branchId
+  ) => {
     try {
       const db = getDatabase();
-      
+
       let facilityRef, branchRef;
-      
+
       if (hospitalId) {
         // Set references for hospitals
         facilityRef = ref(db, `hospitals/${hospitalId}/name`);
@@ -29,35 +34,37 @@ const Patients = () => {
         branchRef = ref(db, `clinics/${clinicId}/branch/${branchId}/name`);
       } else {
         // No hospital or clinic ID provided
-        return { hospitalName: "Unknown Facility", branchName: "Unknown Branch" };
+        return {
+          hospitalName: "Unknown Facility",
+          branchName: "Unknown Branch",
+        };
       }
-      
+
       // Fetch facility (hospital/clinic) name
       const facilityName = await new Promise((resolve) => {
         onValue(facilityRef, (snapshot) => {
           resolve(snapshot.val() || "Unknown Facility");
         });
       });
-      
+
       // Fetch branch name
       const branchName = await new Promise((resolve) => {
         onValue(branchRef, (snapshot) => {
           resolve(snapshot.val() || "Unknown Branch");
         });
       });
-  
+
       return { hospitalName: facilityName, branchName };
-      
     } catch (error) {
       console.error("Error fetching facility and branch names:", error);
       return { hospitalName: "Error", branchName: "Error" };
     }
-  };  
+  };
 
   const fetchMedicalRecords = () => {
     const db = getDatabase();
     const patientsRef = ref(db, "patients");
-  
+
     onValue(patientsRef, async (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -66,16 +73,20 @@ const Patients = () => {
             .filter((key) => data[key])
             .map(async (key) => {
               // Assume the first medical record is used here
-              const medicalRecord = Object.values(data[key].medicalRecords || {})[0];
-              const { hospital_id, clinic_id, branch_id } = medicalRecord?.healthcareProvider || {};
-  
+              const medicalRecord = Object.values(
+                data[key].medicalRecords || {}
+              )[0];
+              const { hospital_id, clinic_id, branch_id } =
+                medicalRecord?.healthcareProvider || {};
+
               // Fetch facility and branch names
-              const { hospitalName, branchName } = await fetchHospitalAndBranchNames(
-                hospital_id || null,
-                clinic_id || null,
-                branch_id
-              );
-  
+              const { hospitalName, branchName } =
+                await fetchHospitalAndBranchNames(
+                  hospital_id || null,
+                  clinic_id || null,
+                  branch_id
+                );
+
               return {
                 id: key,
                 ...data[key],
@@ -87,7 +98,7 @@ const Patients = () => {
         setMedicalRecords(patientsList);
       }
     });
-  };  
+  };
 
   useEffect(() => {
     fetchMedicalRecords();
@@ -159,13 +170,20 @@ const Patients = () => {
         <h2 className="text-xl font-semibold p-1">Patients</h2>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search Patients"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[32.9%] mb-4 text-sm"
-      />
+      <div className="flex w-[406px]">
+        <div className="relative justify-end w-full">
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="border border-gray-300 w-full rounded-md p-2 mb-4 text-sm"
+          />
+          <span className="absolute right-3 top-[35%] transform -translate-y-1/2">
+            <IoIosSearch size={20} className="text-gray-400" />
+          </span>
+        </div>
+      </div>
 
       <div className="overflow-x-auto overflow-y-auto border rounded-xl overflow-hidden">
         <table className="w-full text-left text-[#171A1F] text-sm">
@@ -211,12 +229,8 @@ const Patients = () => {
                     <td className="p-3">
                       {medicalRecord?.dateDischarged || "N/A"}
                     </td>
-                    <td className="p-3">
-                      {patient?.hospitalName || "N/A"}
-                    </td>
-                    <td className="p-3">
-                      {patient?.branchName || "N/A"}
-                    </td>
+                    <td className="p-3">{patient?.hospitalName || "N/A"}</td>
+                    <td className="p-3">{patient?.branchName || "N/A"}</td>
                     <td className="p-3">{doctorName || "To be assigned"}</td>
                     <td className="p-3">
                       <span

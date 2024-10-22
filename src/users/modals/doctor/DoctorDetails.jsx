@@ -38,7 +38,7 @@ const DoctorDetails = ({ isOpen, doctor, onClose }) => {
             </p> */}
           </div>
         </div>
-        <div className="flex mt-2">
+        <div className="flex justify-end mt-2">
           <button onClick={onClose} className="main-button">
             Close
           </button>

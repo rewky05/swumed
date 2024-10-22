@@ -3,6 +3,7 @@ import { getDatabase, ref, onValue } from "firebase/database";
 
 import { FaSortUp, FaSortDown } from "react-icons/fa";
 import { FaSortAlphaUp, FaSortAlphaDown } from "react-icons/fa";
+import { IoIosSearch } from "react-icons/io";
 
 const Staff = ({ role, title }) => {
   const [staffMembers, setStaffMembers] = useState([]);
@@ -164,16 +165,25 @@ const Staff = ({ role, title }) => {
         </div>
 
         <div className="flex items-center gap-x-4">
-          <input
-            type="text"
-            placeholder={`Search ${title}`}
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="border border-gray-300 rounded-md p-2 w-[32.9%] text-sm"
-          />
-          <button onClick={handleSortOrderChange} className="text-xl">
-            {sortOrder === "asc" ? <FaSortAlphaUp /> : <FaSortAlphaDown />}
-          </button>
+          <div className="flex w-[406px] items-center">
+            <div className="relative justify-end w-full">
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="border border-gray-300 w-full rounded-md p-2 mb-4 text-sm"
+              />
+              <span className="absolute right-3 top-[35%] transform -translate-y-1/2">
+                <IoIosSearch size={20} className="text-gray-400" />
+              </span>
+            </div>
+          </div>
+          <div className="mb-[10px]">
+            <button onClick={handleSortOrderChange} className="text-xl">
+              {sortOrder === "asc" ? <FaSortAlphaUp /> : <FaSortAlphaDown />}
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto overflow-y-auto border rounded-xl overflow-hidden">
@@ -206,7 +216,7 @@ const Staff = ({ role, title }) => {
                           View
                         </button>
                         <button className="action-button">Edit</button>
-                        <button className="action-button">Delete</button>
+                        <button className="discharge-button">Delete</button>
                       </td>
                     </tr>
                   );

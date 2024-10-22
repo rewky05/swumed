@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoIosSearch } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
+
 import PatientDetailsModal from "../../modals/patient/PatientDetails";
 import CreatePatient from "../../modals/patient/CreatePatient";
 import DischargePatient from "../../modals/patient/DischargePatient";
@@ -149,13 +150,20 @@ const Patients = () => {
         </Link>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search Patients"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[32.9%] mb-4 text-sm"
-      />
+      <div className="flex w-[406px]">
+        <div className="relative justify-end w-full">
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="border border-gray-300 w-full rounded-md p-2 mb-4 text-sm"
+          />
+          <span className="absolute right-3 top-[35%] transform -translate-y-1/2">
+            <IoIosSearch size={20} className="text-gray-400" />
+          </span>
+        </div>
+      </div>
 
       <div className="overflow-x-auto overflow-y-auto border rounded-xl shadow-md">
         <table className="w-full text-left text-[#171A1F] text-sm">
@@ -241,17 +249,21 @@ const Patients = () => {
                       >
                         +Summary
                       </button> */}
-                      <button className={`action-button opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon`}>New Record</button>
+                      <button
+                        className={`action-button opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon`}
+                      >
+                        New Record
+                      </button>
                       <button
                         onClick={() =>
                           handleDischargePatient(patient, recordId)
                         }
-                        className={`action-button ${
+                        className={`discharge-button ${
                           doctorName === "To be assigned" ||
                           medicalRecord?.status.toLowerCase() ===
                             "discharged" ||
                           medicalRecord?.status.toLowerCase() === "admitted"
-                            ? "opacity-50 cursor-not-allowed transition-none hover:bg-white hover:text-primary_maroon"
+                            ? "opacity-50 cursor-not-allowed transition-none"
                             : ""
                         }`}
                         disabled={doctorName === "To be assigned"}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ref, onValue } from "firebase/database";
 import { database } from "../../../backend/firebase";
+import { IoIosSearch } from "react-icons/io";
 import DoctorDetailsModal from "../../modals/doctor/DoctorDetails";
 import Loading from "../../Loading";
 
@@ -130,13 +131,20 @@ const Doctors = () => {
   return (
     <div className="p-8">
       <h2 className="text-xl font-semibold p-1 mb-4">Doctors</h2>
-      <input
-        type="text"
-        placeholder="Search Doctors"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md text-sm p-2 w-[30%] mb-4"
-      />
+      <div className="flex w-[406px]">
+        <div className="relative justify-end w-full">
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="border border-gray-300 w-full rounded-md p-2 mb-4 text-sm"
+          />
+          <span className="absolute right-3 top-[35%] transform -translate-y-1/2">
+            <IoIosSearch size={20} className="text-gray-400" />
+          </span>
+        </div>
+      </div>
 
       <div className="overflow-x-auto overflow-y-auto border rounded-xl overflow-hidden shadow-md">
         <table className="w-full text-left text-[#171A1F] text-sm">

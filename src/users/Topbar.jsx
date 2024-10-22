@@ -11,7 +11,7 @@ const Topbar = () => {
 
   return (
     <div className="bg-white shadow-sm z-40 py-[40px] px-4 fixed top-0 w-full h-[80px] flex justify-between items-center text-white font-medium select-none">
-      <img src={Logo} className="h-[68px]" />
+      <img src={Logo} className="h-[55px] ml-[30px]" />
 
       <div className="flex items-center">
         <div className="bg-primary_maroon rounded-[50%] p-2 m-4">

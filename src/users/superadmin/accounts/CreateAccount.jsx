@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Select from "react-select";
 import {
   getDatabase,
   ref as dbRef,
@@ -75,6 +76,14 @@ const CreateAccount = () => {
   const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
   const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
 
+  const handleProviderChange = (selectedOption) => {
+    setProviderId(selectedOption.value);
+  };
+
+  const handleAssignedDoctorChange = (selectedOption) => {
+    setAssignedDoctor(selectedOption.value);
+  };
+
   const handleBirthdateChange = (e) => {
     const selectedDate = e.target.value;
     setBirthdate(selectedDate);
@@ -119,6 +128,13 @@ const CreateAccount = () => {
     setImageFile(null);
     setConsultationDays("");
     setStatus("");
+
+    setProviders([]);
+    setAssignedDoctor("");
+
+    console.log("Role changed, resetting form...");
+    console.log("providerId:", providerId);
+    console.log("assignedDoctor:", assignedDoctor);
   }, [role]);
 
   const handleFileName = async (e) => {
@@ -326,7 +342,7 @@ const CreateAccount = () => {
                 <select
                   value={providerType}
                   onChange={(e) => setProviderType(e.target.value)}
-                  className="border rounded-md p-2 cursor-pointer select-none w-full outline-none"
+                  className="border pl-4 rounded-md p-2 cursor-pointer select-none w-full outline-none"
                   required
                 >
                   <option value="">Select Facility Type</option>
@@ -342,7 +358,7 @@ const CreateAccount = () => {
               </div>
             </div>
 
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <label>Facility</label>
               <div className="relative justify-end">
                 <select
@@ -365,6 +381,72 @@ const CreateAccount = () => {
                   />
                 </span>
               </div>
+            </div> */}
+
+            <div className="flex flex-col">
+              <label>Facility</label>
+              <div className="relative justify-end">
+                <Select
+                  value={
+                    providerId
+                      ? providers.find((option) => option.value === providerId)
+                      : null
+                  }
+                  // isClearable={true}
+                  onChange={handleProviderChange}
+                  options={providers.map(([id, provider]) => ({
+                    value: id,
+                    label: provider.name,
+                  }))}
+                  classNamePrefix="react-select"
+                  placeholder="Select Facility"
+                  className=""
+                  styles={{
+                    placeholder: (base) => ({
+                      ...base,
+                      // padding: "6px"
+                    }),
+                    control: (base, state) => ({
+                      ...base,
+                      borderRadius: "6px",
+                      outline: "black",
+                      border: state.isFocused
+                        ? "1px solid #ccc"
+                        : "1px solid #ccc",
+                      // minHeight: "36px",
+                    }),
+                    valueContainer: (base) => ({
+                      ...base,
+                      paddingLeft: "12px",
+                      padding: "4.5px",
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isSelected
+                        ? "#66181E"
+                        : state.isFocused
+                        ? "#f5eaea"
+                        : "white",
+                      color: state.isSelected ? "white" : "black",
+                      ":active": {
+                        backgroundColor: "#e0b3b3",
+                      },
+                      hover: {
+                        cursor: "pointer",
+                      },
+                    }),
+                    indicatorSeparator: () => ({
+                      display: "none",
+                    }),
+                  }}
+                />
+                <span className="absolute right-[9px] top-1/2 transform -translate-y-1/2 cursor-pointer">
+                  <TiArrowSortedDown
+                    size={20}
+                    className="text-primary_maroon"
+                  />
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-col">
@@ -373,7 +455,7 @@ const CreateAccount = () => {
                 <select
                   value={branch}
                   onChange={(e) => setBranch(e.target.value)}
-                  className="border rounded-md p-2 cursor-pointer w-full outline-none"
+                  className="border pl-4 rounded-md p-2 cursor-pointer w-full outline-none"
                   required
                 >
                   <option value="">Select Branch</option>
@@ -394,7 +476,7 @@ const CreateAccount = () => {
 
             {role === "patient" && (
               <>
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label>Assigned Doctor</label>
                   <div className="relative justify-end">
                     <select
@@ -419,7 +501,73 @@ const CreateAccount = () => {
                       />
                     </span>
                   </div>
+                </div> */}
+                <div className="flex flex-col">
+                  <label>Assigned Doctor</label>
+                  <div className="relative justify-end">
+                    <Select
+                      value={
+                        assignedDoctor
+                          ? doctors.find(
+                              (doctor) => doctor.id === assignedDoctor.value
+                            )
+                          : null
+                      }
+                      onChange={handleAssignedDoctorChange}
+                      options={doctors.map((doctor) => ({
+                        value: doctor.id,
+                        label: `${doctor.firstName} ${doctor.lastName} - ${doctor.specialty}`,
+                      }))}
+                      classNamePrefix="react-select"
+                      placeholder="Select Doctor"
+                      styles={{
+                        placeholder: (base) => ({
+                          ...base,
+                          // padding: "6px"
+                        }),
+                        control: (base, state) => ({
+                          ...base,
+                          borderRadius: "6px",
+                          outline: "black",
+                          border: state.isFocused
+                            ? "1px solid #ccc"
+                            : "1px solid #ccc",
+                          // minHeight: "36px",
+                        }),
+                        valueContainer: (base) => ({
+                          ...base,
+                          paddingLeft: "12px",
+                          padding: "4.5px",
+                        }),
+                        option: (base, state) => ({
+                          ...base,
+                          backgroundColor: state.isSelected
+                            ? "#66181E"
+                            : state.isFocused
+                            ? "#f5eaea"
+                            : "white",
+                          color: state.isSelected ? "white" : "black",
+                          ":active": {
+                            backgroundColor: "#e0b3b3",
+                          },
+                          hover: {
+                            cursor: "pointer",
+                          },
+                        }),
+                        indicatorSeparator: () => ({
+                          display: "none",
+                        }),
+                      }}
+                    />
+                    <span className="absolute right-[9px] top-1/2 transform -translate-y-1/2 cursor-pointer">
+                      <TiArrowSortedDown
+                        size={20}
+                        className="text-primary_maroon"
+                      />
+                    </span>
+                  </div>
                 </div>
+
                 <div className="flex flex-col">
                   <label>Room No.</label>
                   <input
@@ -681,8 +829,8 @@ const CreateAccount = () => {
                       className="border rounded-md p-2 cursor-pointer select-none w-full"
                     >
                       <option value="">Select Status</option>
-                      <option value="Male">Active</option>
-                      <option value="Female">Visiting</option>
+                      <option value="Active">Active</option>
+                      <option value="Visiting">Visiting</option>
                     </select>
                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                       <TiArrowSortedDown

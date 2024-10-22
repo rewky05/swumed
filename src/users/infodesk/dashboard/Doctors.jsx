@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaEye } from "react-icons/fa";
-import { IoMdAdd } from "react-icons/io";
+import { IoMdAdd, IoIosSearch } from "react-icons/io";
 import { Link } from "react-router-dom";
 import DoctorDetailsModal from "../../modals/doctor/DoctorDetails";
 import CreateDoctor from "../../modals/doctor/CreateDoctor";
@@ -75,13 +75,20 @@ const Doctors = () => {
         </Link>
       </div>
 
-      <input
-        type="text"
-        placeholder="Search Doctors"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="border border-gray-300 rounded-md p-2 w-[30%] mb-4 text-sm"
-      />
+      <div className="flex w-[393px]">
+        <div className="relative justify-end w-full">
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="border border-gray-300 w-full rounded-md p-2 mb-4 text-sm"
+          />
+          <span className="absolute right-3 top-[35%] transform -translate-y-1/2">
+            <IoIosSearch size={20} className="text-gray-400" />
+          </span>
+        </div>
+      </div>
       {/* grid grid-cols-2 md:grid-cols-3 gap-4 h-[250px] */}
       {/* flex flex-row gap-4 overflow-x-auto */}
       <div className="overflow-x-auto overflow-y-auto max-h-[270px] border rounded-xl overflow-hidden shadow-md">
